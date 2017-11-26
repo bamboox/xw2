@@ -51,7 +51,7 @@ public class JwtHelper {
         return builder.compact();
     }
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         System.out.println("login................");
         String resultMsg;
         String salt = "123456";
@@ -67,5 +67,5 @@ public class JwtHelper {
                 role, clientID, entityName,
                 604800, "mySecret");
         System.out.println("accessToken:" + accessToken);
-    }
+    }*/
 }
