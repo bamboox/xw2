@@ -1,0 +1,8 @@
+*.iml
+.idea
+.mvn
+target/classes
+target/generated-sources
+target/maven-archiver
+target/maven-status
+target/xw-0.0.1-SNAPSHOT.jar.original
