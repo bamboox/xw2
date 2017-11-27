@@ -48,10 +48,12 @@ jwt:
   header: Authorization
   secret: mySecret
   expiration: 604800
+  tokenHead: Bearer
   route:
     authentication:
-      path: auth
-      refresh: refresh
+      path: auth/login
+      refresh: auth/refresh
+      register: auth/register
 
 ---
 spring:
@@ -64,9 +66,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/test?prepStmtCacheSize=517&cachePrepStmts=true&autoReconnect=true&characterEncoding=utf-8&allowMultiQueries=true
+    url: jdbc:mysql://localhost:3306/security_db?prepStmtCacheSize=517&cachePrepStmts=true&autoReconnect=true&characterEncoding=utf-8&allowMultiQueries=true
     username: root
-    password: root
+    password: admin
     hikari:
       minimum-idle: 2
       maximum-pool-size: 10
@@ -98,14 +100,6 @@ logging:
 endpoints:
   metrics:
     enabled: true
-jwt:
-  header: Authorization
-  secret: mySecret
-  expiration: 604800
-  route:
-    authentication:
-      path: auth
-      refresh: refresh
 
 # JWT 604800
 jwt:
@@ -117,7 +111,7 @@ jwt:
     authentication:
       path: auth/login
       refresh: auth/refresh
-      register: auth/register"
+      register: auth/register
 
 #logging:
 #  level:
