@@ -25,11 +25,10 @@ public class AuthController {
     @ApiOperation("登录")
     @RequestMapping(value = "/auth/login", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(
-            String username,String password
+            @RequestBody SysUser user
     ) throws AuthenticationException{
         //  @RequestBody JwtAuthenticationRequest authenticationRequest
-        final String token = authService.login(username,password);
-
+        final String token = authService.login(user.getUsername(),user.getPassword());
         // Return the token
         return ResponseEntity.ok(new JwtAuthenticationResponse(token));
     }
