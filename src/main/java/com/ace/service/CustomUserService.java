@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
- * Created by sang on 2017/1/10.
+ * @author bamboo
  */
 public class CustomUserService implements UserDetailsService {
     @Autowired
@@ -22,10 +22,6 @@ public class CustomUserService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("用户名不存在");
         }
-        System.out.println("s:"+s);
-        System.out.println("username:"+user.getUsername()+";password:"+user.getPassword());
-        System.out.println("size:"+user.getRoles().size());
-        System.out.println("role:"+user.getRoles().get(0).getName());
         return user;
     }
 }

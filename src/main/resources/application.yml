@@ -1,74 +1,75 @@
-# config context path to "/" by setting an empty string
-spring:
-#  profiles: default
-  application:
-    name: test
+## config context path to "/" by setting an empty string
+#spring:
+##  profiles: default
+#  application:
+#    name: test
+#
+#  output:
+#    ansi:
+#      enabled: DETECT
+##  data:
+##    rest:
+##      basePath: ${bls-gateway.api.base-path}/data
+#  h2:
+#    console:
+#      enabled: true
+#      settings:
+#        web-allow-others: true
+#      path: /console # Path at which the console will be available.
+#
+#  datasource:
+#    continue-on-error: true
+#    driver-class-name: org.h2.Driver
+#    username: sa
+#    password:
+#    url: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+#    hikari:
+#      minimum-idle: 2
+#      maximum-pool-size: 10
+#  jpa:
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.H2Dialect
+#        hbm2ddl:
+#          auto: create
+#        show_sql: false
+## http://docs.spring.io/spring-boot/docs/current/reference/html/howto-logging.html
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        web: INFO
+#      hibernate: ERROR
+#    com:
+#      aliyun: DEBUG
+#
+#debug: false
+#jwt:
+#  header: Authorization
+#  secret: mySecret
+#  expiration: 604800
+#  tokenHead: Bearer
+#  route:
+#    authentication:
+#      path: auth/login
+#      refresh: auth/refresh
+#      register: auth/register
 
-  output:
-    ansi:
-      enabled: DETECT
-#  data:
-#    rest:
-#      basePath: ${bls-gateway.api.base-path}/data
-  h2:
-    console:
-      enabled: true
-      settings:
-        web-allow-others: true
-      path: /console # Path at which the console will be available.
-
-  datasource:
-    continue-on-error: true
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-    url: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    hikari:
-      minimum-idle: 2
-      maximum-pool-size: 10
-  jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
-        hbm2ddl:
-          auto: create
-        show_sql: false
-# http://docs.spring.io/spring-boot/docs/current/reference/html/howto-logging.html
-logging:
-  level:
-    org:
-      springframework:
-        web: INFO
-      hibernate: ERROR
-    com:
-      aliyun: DEBUG
-
-debug: false
-jwt:
-  header: Authorization
-  secret: mySecret
-  expiration: 604800
-  tokenHead: Bearer
-  route:
-    authentication:
-      path: auth/login
-      refresh: auth/refresh
-      register: auth/register
-
----
-spring:
 ---
 # server/system/spring configs section
 spring:
-  profiles: prod
+#  profiles: prod
   main.banner-mode: off
   h2.console.enabled: false
+
+  http.multipart.maxFileSize: 2Mb
+  http.multipart.maxRequestSize: 2Mb
 
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/security_db?prepStmtCacheSize=517&cachePrepStmts=true&autoReconnect=true&characterEncoding=utf-8&allowMultiQueries=true
     username: root
-    password: root
+    password: admin
     hikari:
       minimum-idle: 2
       maximum-pool-size: 10
@@ -112,6 +113,8 @@ jwt:
       path: auth/login
       refresh: auth/refresh
       register: auth/register
+
+web.upload-path: /home/bamboo/image_test/
 
 #logging:
 #  level:
