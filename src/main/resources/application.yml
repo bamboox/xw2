@@ -68,7 +68,7 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/security_db?prepStmtCacheSize=517&cachePrepStmts=true&autoReconnect=true&characterEncoding=utf-8&allowMultiQueries=true
     username: root
-    password: admin
+    password: root
     hikari:
       minimum-idle: 2
       maximum-pool-size: 10
