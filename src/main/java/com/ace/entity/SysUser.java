@@ -1,5 +1,6 @@
 package com.ace.entity;
 
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,9 +12,10 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by sang on 2017/1/10.
+ * @author bamboo
  */
 @Entity
+@Data
 public class SysUser implements UserDetails {
     @Id
     @GeneratedValue
@@ -23,38 +25,6 @@ public class SysUser implements UserDetails {
     private Date lastPasswordResetDate;
     @ManyToMany(cascade = {CascadeType.REFRESH},fetch = FetchType.EAGER)
     private List<SysRole> roles;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public List<SysRole> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<SysRole> roles) {
-        this.roles = roles;
-    }
-
-    public Date getLastPasswordResetDate() {
-        return lastPasswordResetDate;
-    }
-
-    public void setLastPasswordResetDate(Date lastPasswordResetDate) {
-        this.lastPasswordResetDate = lastPasswordResetDate;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

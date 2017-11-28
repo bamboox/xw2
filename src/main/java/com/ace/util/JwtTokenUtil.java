@@ -1,9 +1,12 @@
 package com.ace.util;
 
+import com.ace.jwt.JwtHelper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import com.ace.entity.SysUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -15,6 +18,7 @@ import java.util.Map;
 
 @Component
 public class JwtTokenUtil implements Serializable {
+    private static Logger log = LoggerFactory.getLogger(JwtHelper.class);
 
     private static final long serialVersionUID = -3301605591108950415L;
 
@@ -33,6 +37,7 @@ public class JwtTokenUtil implements Serializable {
             final Claims claims = getClaimsFromToken(token);
             username = claims.getSubject();
         } catch (Exception e) {
+            log.error("getUsernameFromToken caught: ", e);
             username = null;
         }
         return username;
@@ -44,6 +49,7 @@ public class JwtTokenUtil implements Serializable {
             final Claims claims = getClaimsFromToken(token);
             created = new Date((Long) claims.get(CLAIM_KEY_CREATED));
         } catch (Exception e) {
+            log.error("getCreatedDateFromToken caught: ", e);
             created = null;
         }
         return created;
@@ -55,6 +61,7 @@ public class JwtTokenUtil implements Serializable {
             final Claims claims = getClaimsFromToken(token);
             expiration = claims.getExpiration();
         } catch (Exception e) {
+            log.error("getExpirationDateFromToken caught: ", e);
             expiration = null;
         }
         return expiration;
@@ -68,6 +75,7 @@ public class JwtTokenUtil implements Serializable {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (Exception e) {
+            log.error("getClaimsFromToken caught: ", e);
             claims = null;
         }
         return claims;

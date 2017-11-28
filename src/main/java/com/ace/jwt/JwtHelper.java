@@ -1,6 +1,7 @@
 package com.ace.jwt;
 import java.security.Key;
 import java.util.Date;
+
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import io.jsonwebtoken.Claims;
@@ -8,8 +9,11 @@ import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import com.ace.util.MyUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JwtHelper {
+    private static Logger log = LoggerFactory.getLogger(JwtHelper.class);
     public static Claims parseJWT(String jsonWebToken, String base64Security) {
         try {
             Claims claims = Jwts.parser()
@@ -17,6 +21,7 @@ public class JwtHelper {
                     .parseClaimsJws(jsonWebToken).getBody();
             return claims;
         } catch (Exception ex) {
+            log.error("parseJWT caught: ", ex);
             return null;
         }
     }
