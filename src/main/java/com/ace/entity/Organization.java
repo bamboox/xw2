@@ -15,10 +15,7 @@ import java.util.Set;
 @Data
 @Table(name = "organization")
 public class Organization extends AbstractTimestampEntity {
-    @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid")
-    private String id;
+
     private String name;
     @OneToMany(mappedBy = "organization",cascade= CascadeType.ALL)
     private Set<Department> departments = new HashSet<Department>();

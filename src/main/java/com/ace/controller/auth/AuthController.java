@@ -1,8 +1,8 @@
-package com.ace.controller;
+package com.ace.controller.auth;
 
-import com.ace.dao.SysUserRepository;
+import com.ace.repository.SysUserRepository;
 import com.ace.entity.SysUser;
-import com.ace.dao.AuthService;
+import com.ace.repository.AuthService;
 import com.ace.service.JwtAuthenticationResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
-@Api(value = "用户controller", description = "用户操作", tags = {"用户操作接口"})
+@Api(value = "用户controller", description = "用户操作")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -33,15 +33,12 @@ public class AuthController {
 
     @ApiOperation("登录")
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.CREATED)
-    public JwtAuthenticationResponse createAuthenticationToken(
-        @RequestBody SysUser user
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody ApiAuthReqParam apiAuthReqParam
     ) throws AuthenticationException {
-        //  @RequestBody JwtAuthenticationRequest authenticationRequest
+        SysUser user=apiAuthReqParam.getSysUser();
         final String token = authService.login(user.getUsername(), user.getPassword());
-        // Return the token
-        //return ResponseEntity.ok(new JwtAuthenticationResponse(token));
-        return new JwtAuthenticationResponse(token);
+        return ResponseEntity.ok(new JwtAuthenticationResponse(token));
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)

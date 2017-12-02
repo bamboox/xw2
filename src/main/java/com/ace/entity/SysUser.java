@@ -10,10 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
@@ -22,11 +19,9 @@ import com.alibaba.fastjson.annotation.JSONField;
  */
 @Entity
 @Data
+@Table(name = "sys_user")
 public class SysUser extends AbstractTimestampEntity implements UserDetails {
-    @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid")
-    private String id;
+
     private String username;
     @JSONField(serialize = false)
     private String password;

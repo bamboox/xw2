@@ -1,7 +1,6 @@
 package com.ace.controller;
 
-import com.ace.common.exception.ResourceNotFoundException;
-import com.ace.dao.SysUserRepository;
+import com.ace.repository.SysUserRepository;
 import com.ace.entity.SysUser;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -10,7 +9,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

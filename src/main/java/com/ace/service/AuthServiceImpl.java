@@ -1,7 +1,7 @@
 package com.ace.service;
 
-import com.ace.dao.AuthService;
-import com.ace.dao.SysUserRepository;
+import com.ace.repository.AuthService;
+import com.ace.repository.SysUserRepository;
 import com.ace.entity.SysUser;
 import com.ace.util.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;

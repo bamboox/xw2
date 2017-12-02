@@ -10,12 +10,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.UUID;
+
 /**
  * @author bamboo
  */
 @Data
 @AllArgsConstructor
-class ApiBaseResponse {
+public class ApiBaseResponse {
 
     @JSONField(name = "Code")
     @ApiModelProperty(required = true, notes = "JSON key: Code")
@@ -29,23 +31,38 @@ class ApiBaseResponse {
     @ApiModelProperty(required = true, notes = "JSON key: RequestId")
     String requestId;
 
-    static ApiBaseResponse fromHttpStatus(HttpStatus httpStatus, String requestId) {
+    @JSONField(name = "Data")
+    @ApiModelProperty(required = true, notes = "JSON key: Data")
+    Object data;
+
+    public static ApiBaseResponse fromHttpStatus(HttpStatus httpStatus,Object data,String requestId) {
         return new ApiBaseResponse(
-            httpStatus.toString(),
-            httpStatus.getReasonPhrase(),
-            requestId
+                httpStatus.toString(),
+                httpStatus.getReasonPhrase(),
+                requestId,
+                data
         );
     }
 
-    static ApiBaseResponse fromHttpStatus(HttpStatus httpStatus, String message, String requestId) {
+    public static ApiBaseResponse fromHttpStatus(HttpStatus httpStatus, String message, String requestId) {
         return new ApiBaseResponse(
-            httpStatus.toString(),
-            message != null ? message : httpStatus.getReasonPhrase(),
-            requestId
+                httpStatus.toString(),
+                message != null ? message : httpStatus.getReasonPhrase(),
+                requestId,
+                null
         );
     }
 
-    static ResponseEntity toResponseEntity(HttpStatus httpStatus, String requestId) {
+    public static ApiBaseResponse fromHttpStatus(HttpStatus httpStatus, Object data) {
+        return new ApiBaseResponse(
+                httpStatus.toString(),
+                httpStatus.getReasonPhrase(),
+                UUID.randomUUID().toString(),
+                data
+        );
+    }
+
+    public static ResponseEntity toResponseEntity(HttpStatus httpStatus, String requestId) {
         return new ResponseEntity(ApiBaseResponse.fromHttpStatus(httpStatus, requestId), httpStatus);
     }
 

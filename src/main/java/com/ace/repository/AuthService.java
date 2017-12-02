@@ -1,4 +1,4 @@
-package com.ace.dao;
+package com.ace.repository;
 
 import com.ace.entity.SysUser;
 

@@ -14,10 +14,7 @@ import java.util.Set;
 @Data
 @Table(name = "department")
 public class Department extends AbstractTimestampEntity {
-    @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid")
-    private String id;
+
     private String name;
     @ManyToOne
     @JoinColumn(name = "organization_id")

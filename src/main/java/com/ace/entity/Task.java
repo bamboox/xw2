@@ -1,5 +1,6 @@
 package com.ace.entity;
 
+import com.ace.common.jpa.AbstractTimestampEntity;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -10,11 +11,8 @@ import javax.persistence.*;
  */
 @Entity
 @Data
-public class Task {
-    @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid")
-    private String id;
+public class Task extends AbstractTimestampEntity {
+
     @ManyToOne
     @JoinColumn(name = "discovery_id")
     private Discovery discovery;
