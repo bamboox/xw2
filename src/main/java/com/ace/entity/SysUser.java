@@ -1,7 +1,9 @@
 package com.ace.entity;
 
+import com.ace.common.jpa.AbstractTimestampEntity;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,10 +22,11 @@ import com.alibaba.fastjson.annotation.JSONField;
  */
 @Entity
 @Data
-public class SysUser implements UserDetails {
+public class SysUser extends AbstractTimestampEntity implements UserDetails {
     @Id
-    @GeneratedValue
-    private Long id;
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid")
+    private String id;
     private String username;
     @JSONField(serialize = false)
     private String password;
@@ -32,6 +35,10 @@ public class SysUser implements UserDetails {
     @JSONField(serialize = false)
     @ManyToMany(cascade = {CascadeType.REFRESH}, fetch = FetchType.EAGER)
     private List<SysRole> roles;
+
+    @ManyToOne(cascade = {CascadeType.REFRESH})
+    @JoinColumn(name = "department_id")
+    private Department department;
 
     @JSONField(serialize = false)
     @Override

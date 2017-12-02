@@ -1,11 +1,12 @@
 package com.ace.dao;
 
+import com.ace.common.jpa.ReadOnlyPagingAndSortingRepository;
 import com.ace.entity.SysUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * Created by sang on 2017/1/10.
+ * @author bamboo
  */
-public interface SysUserRepository extends JpaRepository<SysUser, Long> {
+public interface SysUserRepository extends ReadOnlyPagingAndSortingRepository<SysUser, Long> {
     SysUser findByUsername(String username);
 }

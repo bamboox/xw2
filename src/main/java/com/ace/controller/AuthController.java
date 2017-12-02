@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @Api(value = "用户controller", description = "用户操作", tags = {"用户操作接口"})
 @RestController
+@RequestMapping("/auth")
 public class AuthController {
     @Value("${jwt.header}")
     private String tokenHeader;
@@ -29,7 +30,7 @@ public class AuthController {
     private SysUserRepository userRepository;
 
     @ApiOperation("登录")
-    @RequestMapping(value = "/auth/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(
         @RequestBody SysUser user
     ) throws AuthenticationException {
@@ -39,7 +40,7 @@ public class AuthController {
         return ResponseEntity.ok(new JwtAuthenticationResponse(token));
     }
 
-    @RequestMapping(value = "/auth/login", method = RequestMethod.GET)
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
     public ResponseEntity<?> refreshAndGetAuthenticationToken(
         HttpServletRequest request) throws AuthenticationException {
         String token = request.getHeader(tokenHeader);
@@ -52,12 +53,12 @@ public class AuthController {
     }
 
     @ApiOperation("注册")
-    @RequestMapping(value = "/auth/register", method = RequestMethod.POST)
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
     public SysUser register(@RequestBody SysUser addedUser) throws AuthenticationException {
         return authService.register(addedUser);
     }
 
-    @RequestMapping(value = "/auth/test", method = RequestMethod.POST)
+    @RequestMapping(value = "/test", method = RequestMethod.POST)
     public ResponseEntity<?> test() throws AuthenticationException {
         return ResponseEntity.ok(userRepository.findOne(1L));
     }

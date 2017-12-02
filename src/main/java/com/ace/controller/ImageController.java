@@ -1,9 +1,8 @@
 package com.ace.controller;
 
 import com.ace.entity.SysUser;
-import com.ace.service.JwtAuthenticationResponse;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
@@ -15,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.util.StringUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
 
 import static springfox.documentation.spring.web.paths.RelativePathProvider.ROOT;
@@ -23,6 +21,7 @@ import static springfox.documentation.spring.web.paths.RelativePathProvider.ROOT
 /**
  * @author bamboo
  */
+@Api
 @Controller
 @RequestMapping("/api/image")
 public class ImageController {
@@ -40,8 +39,8 @@ public class ImageController {
     public ResponseEntity<?> getFile(@PathVariable String filename) {
         try {
             SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            long userId = sysUser.getId();
-            String datdDirectory = String.valueOf(userId).concat(File.separator);
+            String userId = sysUser.getId();
+            String datdDirectory = userId.concat(File.separator);
             String filePath = webUploadPath.concat(datdDirectory);
             return ResponseEntity.ok(resourceLoader.getResource("file:" + Paths.get(ROOT,filePath.concat(filename) ).toString()));
         } catch (Exception e) {
@@ -52,7 +51,7 @@ public class ImageController {
     @RequestMapping(value = "/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) {
         SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        long userId = sysUser.getId();
+        String userId = sysUser.getId();
 
         if (!file.isEmpty()) {
             if (file.getContentType().contains("image")) {
@@ -60,7 +59,7 @@ public class ImageController {
                     String fileName = file.getOriginalFilename();
                     String extensionName = StringUtils.substringAfter(fileName, ".");
                     String newFileName = String.valueOf(System.currentTimeMillis()) + "." + extensionName;
-                    String datdDirectory = String.valueOf(userId).concat(File.separator);
+                    String datdDirectory = userId.concat(File.separator);
                     String filePath = webUploadPath.concat(datdDirectory);
                     File dest = new File(filePath, newFileName);
                     if (!dest.getParentFile().exists()) {
