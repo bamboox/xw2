@@ -1,7 +1,6 @@
 package com.ace.controller.home;
 
 import com.ace.common.base.ApiBaseResponse;
-import com.ace.entity.Department;
 import com.ace.entity.Discovery;
 import com.ace.entity.SysUser;
 import com.ace.repository.DiscoveryRepository;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * Created by bamboo on 17-12-2.
@@ -62,7 +58,7 @@ public class DiscoveryController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Get a paginated list of all Discovery.", notes = "The list is paginated. You can provide a page number (default 0) and a page size (default 20)")
     @ResponseBody
-    public Page<Discovery> getDiscovery(@ApiParam(value = "The page number (zero-based)", required = true)
+    public Page<Discovery> getDiscoveryAll(@ApiParam(value = "The page number (zero-based)", required = true)
                                         @RequestParam(value = "page", required = true, defaultValue = DEFAULT_PAGE_NUM) Integer page,
                                         @ApiParam(value = "Tha page size", required = true)
                                         @RequestParam(value = "size", required = true, defaultValue = DEFAULT_PAGE_SIZE) Integer size) {
@@ -70,7 +66,7 @@ public class DiscoveryController {
         SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userId = sysUser.getId();
 
-        return discoveryRepository.findAllById(userId, pageable);
+        return discoveryRepository.findAllByUserId(userId,pageable);
     }
 
     @RequestMapping(value = "/{id}",
@@ -82,6 +78,7 @@ public class DiscoveryController {
     public Discovery getDiscovery(@ApiParam(value = "The ID of the Discovery.", required = true)
                                   @PathVariable("id") String id
     ) throws Exception {
+
         Discovery discovery = discoveryRepository.findOne(id);
         return discovery;
     }
@@ -90,8 +87,8 @@ public class DiscoveryController {
             method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiOperation(value = "Update a SysUser resource.", notes = "You have to provide a valid SysUser ID in the URL and in the payload. The ID attribute can not be updated.")
-    public void updateDiscovery(@ApiParam(value = "The ID of the existing SysUser resource.", required = true)
+    @ApiOperation(value = "Update a SysUser resource.", notes = "You have to provide a valid Discovery ID in the URL and in the payload. The ID attribute can not be updated.")
+    public void updateDiscovery(@ApiParam(value = "The ID of the existing Discovery resource.", required = true)
                                 @PathVariable("id") String id, @RequestBody ApiDiscoveryReqParam apiDiscoveryReqParam) {
         Discovery discovery = apiDiscoveryReqParam.getDiscovery();
 

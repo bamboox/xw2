@@ -2,7 +2,6 @@ package com.ace.entity;
 
 import com.ace.common.jpa.AbstractTimestampEntity;
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.HashSet;

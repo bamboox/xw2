@@ -1,20 +1,27 @@
 package com.ace.entity;
 
 import com.ace.common.jpa.AbstractTimestampEntity;
-import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
-import springfox.documentation.annotations.ApiIgnore;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Created by bamboo on 17-11-29.
  */
-@Entity
+
 @Data
+@EqualsAndHashCode(exclude="imageSet")
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
 @Table(name = "discovery")
 public class Discovery extends AbstractTimestampEntity {
 
