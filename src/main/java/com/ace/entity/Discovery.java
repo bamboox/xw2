@@ -6,10 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,7 +28,7 @@ public class Discovery extends AbstractTimestampEntity {
 
     private String description;
 
-    @OneToMany(mappedBy = "discovery", cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.REFRESH}, fetch = FetchType.EAGER)
     private Set<Image> imageSet = new HashSet<Image>();
 
     private String userId;

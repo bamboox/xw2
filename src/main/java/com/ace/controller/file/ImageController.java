@@ -92,7 +92,7 @@ public class ImageController {
                     image.setUrl(imageUrl);
                     imageRepository.save(image);
 
-                    return ResponseEntity.created(URI.create(imageUrl)).body(ApiBaseResponse.fromHttpStatus(HttpStatus.CREATED, imageUrl));
+                    return ResponseEntity.created(URI.create(imageUrl)).body(ApiBaseResponse.fromHttpStatus(HttpStatus.CREATED, image));
                 } catch (Exception e) {
                     return ResponseEntity.badRequest().body("");
                 }

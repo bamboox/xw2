@@ -2,9 +2,10 @@ package com.ace.entity;
 
 import com.ace.common.jpa.AbstractTimestampEntity;
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 /**
  * Created by bamboo on 17-11-29.
@@ -13,9 +14,9 @@ import javax.persistence.*;
 @Data
 public class Task extends AbstractTimestampEntity {
 
-    @ManyToOne
+    /*@ManyToOne
     @JoinColumn(name = "discovery_id")
-    private Discovery discovery;
+    private Discovery discovery;*/
     @ManyToOne
     @JoinColumn(name = "user_id")
     private SysUser sysUser;
