@@ -6,7 +6,6 @@ import com.ace.entity.Image;
 import com.ace.entity.SysUser;
 import com.ace.repository.ImageRepository;
 import io.swagger.annotations.Api;
-import jdk.nashorn.internal.runtime.URIUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
@@ -19,7 +18,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.util.StringUtils;
 
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.Paths;
 
@@ -43,23 +47,25 @@ public class ImageController {
         this.imageRepository = imageRepository;
     }
 
-    @RequestMapping(value = "/view/{organizationId}/{departmentId}/{userId}/{filename:.+}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{organizationId}/{departmentId}/{userId}/{filename:.+}", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<?> getFile(@PathVariable String organizationId,
-                                     @PathVariable String departmentId,
-                                     @PathVariable String userId,
-                                     @PathVariable String filename) {
-        try {
-            String datdDirectory = organizationId.concat(File.separator).concat(departmentId).concat(File.separator).concat(userId).concat(File.separator);
-            String filePath = webUploadPath.concat(datdDirectory);
-            return ResponseEntity.ok(resourceLoader.getResource("file:" + Paths.get(ROOT, filePath.concat(filename)).toString()));
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+    public void getFile(@PathVariable String organizationId,
+                        @PathVariable String departmentId,
+                        @PathVariable String userId,
+                        @PathVariable String filename, HttpServletResponse response) throws Exception {
+        String datdDirectory = organizationId.concat(File.separator).concat(departmentId).concat(File.separator).concat(userId).concat(File.separator);
+        String filePath = webUploadPath.concat(datdDirectory);
+
+
+        BufferedImage image = ImageIO.read(Paths.get(ROOT, filePath.concat(filename)).toFile());
+        response.setContentType("image/png");
+        OutputStream os = response.getOutputStream();
+        ImageIO.write(image, "png", os);
+
     }
 
-    @RequestMapping(value = "/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) {
+    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
         SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userId = sysUser.getId();
         Department department = sysUser.getDepartment();
@@ -78,8 +84,9 @@ public class ImageController {
                     if (!dest.getParentFile().exists()) {
                         dest.getParentFile().mkdirs();
                     }
+
                     file.transferTo(dest);
-                    String imageUrl = File.separator.concat(datdDirectory).concat(newFileName);
+                    String imageUrl = request.getRequestURI().concat(File.separator).concat(datdDirectory).concat(newFileName);
                     Image image = new Image();
                     image.setUrl(sysUser.getId());
                     image.setUrl(imageUrl);
