@@ -1,7 +1,7 @@
 package com.ace.controller.auth;
 
 import com.ace.common.base.ApiBaseReqParam;
-import com.ace.entity.SysUser;
+import com.ace.entity.user.SysUser;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 

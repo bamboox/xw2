@@ -1,12 +1,12 @@
-package com.ace.entity;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+package com.ace.entity.user;
 
 import com.ace.common.jpa.AbstractTimestampEntity;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 /**
  * @author bamboo

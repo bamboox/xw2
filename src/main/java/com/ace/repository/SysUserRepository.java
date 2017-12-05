@@ -1,8 +1,7 @@
 package com.ace.repository;
 
 import com.ace.common.jpa.ReadOnlyPagingAndSortingRepository;
-import com.ace.entity.SysUser;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.ace.entity.user.SysUser;
 
 /**
  * @author bamboo

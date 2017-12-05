@@ -1,18 +1,17 @@
-package com.ace.entity;
+package com.ace.entity.user;
 
 import com.ace.common.jpa.AbstractTimestampEntity;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-
-import java.util.*;
-
-import com.alibaba.fastjson.annotation.JSONField;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author bamboo

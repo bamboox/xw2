@@ -1,6 +1,7 @@
-package com.ace.entity;
+package com.ace.entity.workflow;
 
 import com.ace.common.jpa.AbstractTimestampEntity;
+import com.ace.entity.file.Image;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -28,9 +29,9 @@ public class Discovery extends AbstractTimestampEntity {
 
     private String description;
 
-    @ManyToMany(cascade = {CascadeType.REFRESH}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    @OrderBy("gmtCreated ASC")
     private Set<Image> imageSet = new HashSet<Image>();
-
     private String userId;
     private String departmentId;
 }

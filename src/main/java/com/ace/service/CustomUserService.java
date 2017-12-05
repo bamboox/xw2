@@ -1,7 +1,7 @@
 package com.ace.service;
 
+import com.ace.entity.user.SysUser;
 import com.ace.repository.SysUserRepository;
-import com.ace.entity.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

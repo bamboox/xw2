@@ -1,9 +1,9 @@
 package com.ace.controller.file;
 
 import com.ace.common.base.ApiBaseResponse;
-import com.ace.entity.Department;
-import com.ace.entity.Image;
-import com.ace.entity.SysUser;
+import com.ace.entity.file.Image;
+import com.ace.entity.user.Department;
+import com.ace.entity.user.SysUser;
 import com.ace.repository.ImageRepository;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;

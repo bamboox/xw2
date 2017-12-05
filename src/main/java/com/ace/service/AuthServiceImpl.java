@@ -1,8 +1,8 @@
 package com.ace.service;
 
+import com.ace.entity.user.SysUser;
 import com.ace.repository.AuthService;
 import com.ace.repository.SysUserRepository;
-import com.ace.entity.SysUser;
 import com.ace.util.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

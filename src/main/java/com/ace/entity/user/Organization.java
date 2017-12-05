@@ -1,7 +1,8 @@
-package com.ace.entity;
+package com.ace.entity.user;
 
 import com.ace.common.jpa.AbstractTimestampEntity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -15,9 +16,10 @@ import java.util.Set;
  */
 @Entity
 @Data
+@EqualsAndHashCode(exclude="departments")
 @Table(name = "organization")
 public class Organization extends AbstractTimestampEntity {
     private String name;
     @OneToMany(mappedBy = "organization",cascade= CascadeType.ALL)
-    private Set<Department> departments = new HashSet<Department>();
+    private Set<Department> departments = new HashSet<>();
 }

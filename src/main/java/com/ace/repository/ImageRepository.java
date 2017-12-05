@@ -1,7 +1,7 @@
 package com.ace.repository;
 
 import com.ace.common.jpa.ReadOnlyPagingAndSortingRepository;
-import com.ace.entity.Image;
+import com.ace.entity.file.Image;
 
 /**
  * Created by bamboo on 17-12-2.

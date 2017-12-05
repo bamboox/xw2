@@ -1,6 +1,7 @@
-package com.ace.entity;
+package com.ace.entity.workflow;
 
 import com.ace.common.jpa.AbstractTimestampEntity;
+import com.ace.entity.user.SysUser;
 import lombok.Data;
 
 import javax.persistence.Entity;
@@ -14,19 +15,16 @@ import javax.persistence.ManyToOne;
 @Data
 public class Task extends AbstractTimestampEntity {
 
-    /*@ManyToOne
-    @JoinColumn(name = "discovery_id")
-    private Discovery discovery;*/
     @ManyToOne
     @JoinColumn(name = "user_id")
     private SysUser sysUser;
-    // send , yes , no
+    // 再办 待办 已办
     private int state;
+
+    private String discoveryId;
 
     private String start_user_id;
     private String start_department_id;
 
-    private String next_user_id;
-    private String next_department_id;
 
 }

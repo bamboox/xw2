@@ -1,13 +1,17 @@
 package com.ace.controller.home;
 
 import com.ace.common.base.ApiBaseResponse;
-import com.ace.entity.Discovery;
-import com.ace.entity.SysUser;
+import com.ace.entity.file.Image;
+import com.ace.entity.user.Department;
+import com.ace.entity.user.SysUser;
+import com.ace.entity.workflow.Discovery;
 import com.ace.repository.DiscoveryRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,10 +21,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.thymeleaf.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by bamboo on 17-12-2.
@@ -29,10 +37,16 @@ import java.net.URI;
 @RestController
 @RequestMapping("/api/discovery")
 public class DiscoveryController {
-    protected static final String DEFAULT_PAGE_SIZE = "20";
-    protected static final String DEFAULT_PAGE_NUM = "0";
-    @Autowired
+    @Value("${web.upload-path}")
+    private String webUploadPath;
+    private final ResourceLoader resourceLoader;
     private DiscoveryRepository discoveryRepository;
+
+    @Autowired
+    public DiscoveryController(ResourceLoader resourceLoader, DiscoveryRepository discoveryRepository) {
+        this.resourceLoader = resourceLoader;
+        this.discoveryRepository = discoveryRepository;
+    }
 
     @RequestMapping(
             method = RequestMethod.POST,
@@ -52,9 +66,78 @@ public class DiscoveryController {
 
         discoveryRepository.save(discovery);
 
-        return ResponseEntity.created(URI.create(request.getRequestURI().concat(File.separator).concat(discovery.getId()).toString())).body(ApiBaseResponse.fromHttpStatus(HttpStatus.CREATED, discovery,apiDiscoveryReqParam.getRequestId()));
+        return ResponseEntity.created(URI.create(request.getRequestURI().concat(File.separator).concat(discovery.getId()).toString())).body(ApiBaseResponse.fromHttpStatus(HttpStatus.CREATED, discovery, apiDiscoveryReqParam.getRequestId()));
 
     }
+
+
+    @RequestMapping(value = "submit",
+            method = RequestMethod.POST,
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "Create a Discovery resource.", notes = "Returns the URL of the new resource in the Location header.")
+    public ResponseEntity<?> submit(@RequestParam("file") MultipartFile files[],
+                                    @RequestParam Long latitude,
+                                    @RequestParam Long longitude,
+                                    @RequestParam String location,
+                                    @RequestParam String description,
+                                    @RequestParam String sendDepartmentId,
+                                    HttpServletRequest request) {
+        SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String userId = sysUser.getId();
+        Department department = sysUser.getDepartment();
+        String departmentId = sysUser.getDepartment().getId();
+        String organizationId = department.getOrganization().getId();
+
+
+        Discovery discovery=new Discovery();
+        discovery.setLatitude(latitude);
+        discovery.setLongitude(longitude);
+        discovery.setLocation(location);
+        discovery.setDescription(description);
+        discovery.setUserId(userId);
+        discovery.setDepartmentId(departmentId);
+
+        //
+
+        Set<Image> imageSet = new HashSet<>();
+
+        for (MultipartFile file : files) {
+            if (!file.isEmpty()) {
+                if (file.getContentType().contains("image")) {
+                    try {
+                        String fileName = file.getOriginalFilename();
+                        String extensionName = StringUtils.substringAfter(fileName, ".");
+                        String newFileName = String.valueOf(System.currentTimeMillis()) + "." + extensionName;
+                        String datdDirectory = organizationId.concat(File.separator).concat(departmentId).concat(File.separator).concat(userId).concat(File.separator);
+                        String filePath = webUploadPath.concat(datdDirectory);
+                        File dest = new File(filePath, newFileName);
+                        if (!dest.getParentFile().exists()) {
+                            dest.getParentFile().mkdirs();
+                        }
+
+                        file.transferTo(dest);
+                        String imageUrl = "/api/image/".concat(datdDirectory).concat(newFileName);
+                        Image image = new Image();
+                        image.setUrl(sysUser.getId());
+                        image.setUrl(imageUrl);
+                        image.setUserId(userId);
+                        imageSet.add(image);
+                    } catch (Exception e) {
+                        return ResponseEntity.badRequest().body("");
+                    }
+                }
+            }
+        }
+        discovery.setImageSet(imageSet);
+
+        discoveryRepository.save(discovery);
+
+        return ResponseEntity.created(URI.create(request.getRequestURI().concat(File.separator).concat(discovery.getId()).toString())).body(ApiBaseResponse.fromHttpStatus(HttpStatus.CREATED, discovery));
+
+    }
+
 
     @RequestMapping(
             method = RequestMethod.GET,
@@ -62,12 +145,12 @@ public class DiscoveryController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Get a paginated list of all Discovery.", notes = "The list is paginated. You can provide a page number (default 0) and a page size (default 20) more ?page=0&size=20&sort=b&sort=a,desc&sort=c,desc ")
     @ResponseBody
-    public Page<Discovery> getDiscoveryAll(@PageableDefault(value = 20, sort = { "gmtCreated" }, direction = Sort.Direction.DESC)
-                                                       Pageable pageable) {
+    public Page<Discovery> getDiscoveryAll(@PageableDefault(value = 20, sort = {"gmtCreated"}, direction = Sort.Direction.DESC)
+                                                   Pageable pageable) {
         SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userId = sysUser.getId();
 
-        return discoveryRepository.findAllByUserId(userId,pageable);
+        return discoveryRepository.findAllByUserId(userId, pageable);
     }
 
     @RequestMapping(value = "/{id}",

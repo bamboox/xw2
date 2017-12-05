@@ -1,4 +1,4 @@
-package com.ace.entity;
+package com.ace.entity.file;
 
 import com.ace.common.jpa.AbstractTimestampEntity;
 import lombok.AllArgsConstructor;
