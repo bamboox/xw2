@@ -1,4 +1,4 @@
-package com.ace.entity.workflow;
+package com.ace.entity;
 
 import com.ace.common.jpa.AbstractTimestampEntity;
 import com.ace.entity.file.Image;
@@ -16,15 +16,15 @@ import java.util.Set;
  */
 
 @Data
-@EqualsAndHashCode(exclude="imageSet")
+@EqualsAndHashCode(exclude = "imageSet")
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "discovery")
 public class Discovery extends AbstractTimestampEntity {
 
-    private Long latitude;
-    private Long longitude;
+    private Double latitude;
+    private Double longitude;
     private String location;
 
     private String description;

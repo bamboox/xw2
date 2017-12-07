@@ -1,14 +1,18 @@
 package com.ace.controller.home;
 
 import com.ace.common.base.ApiBaseResponse;
+import com.ace.entity.Discovery;
 import com.ace.entity.file.Image;
 import com.ace.entity.user.Department;
 import com.ace.entity.user.SysUser;
-import com.ace.entity.workflow.Discovery;
 import com.ace.repository.DiscoveryRepository;
+import com.ace.repository.wfe.IProcessInstanceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.extern.java.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
@@ -36,16 +40,20 @@ import java.util.Set;
 @Api(value = "首页controller", description = "首页操作")
 @RestController
 @RequestMapping("/api/discovery")
+@Log
 public class DiscoveryController {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     @Value("${web.upload-path}")
     private String webUploadPath;
     private final ResourceLoader resourceLoader;
     private DiscoveryRepository discoveryRepository;
+    private IProcessInstanceService iProcessInstanceService;
 
     @Autowired
-    public DiscoveryController(ResourceLoader resourceLoader, DiscoveryRepository discoveryRepository) {
+    public DiscoveryController(ResourceLoader resourceLoader, DiscoveryRepository discoveryRepository, IProcessInstanceService iProcessInstanceService) {
         this.resourceLoader = resourceLoader;
         this.discoveryRepository = discoveryRepository;
+        this.iProcessInstanceService = iProcessInstanceService;
     }
 
     @RequestMapping(
@@ -78,12 +86,13 @@ public class DiscoveryController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "Create a Discovery resource.", notes = "Returns the URL of the new resource in the Location header.")
     public ResponseEntity<?> submit(@RequestParam("file") MultipartFile files[],
-                                    @RequestParam Long latitude,
-                                    @RequestParam Long longitude,
+                                    @RequestParam Double latitude,
+                                    @RequestParam Double longitude,
                                     @RequestParam String location,
                                     @RequestParam String description,
                                     @RequestParam String sendDepartmentId,
                                     HttpServletRequest request) {
+        logger.debug("files:" + files.length);
         SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userId = sysUser.getId();
         Department department = sysUser.getDepartment();
@@ -91,7 +100,7 @@ public class DiscoveryController {
         String organizationId = department.getOrganization().getId();
 
 
-        Discovery discovery=new Discovery();
+        Discovery discovery = new Discovery();
         discovery.setLatitude(latitude);
         discovery.setLongitude(longitude);
         discovery.setLocation(location);
@@ -110,15 +119,15 @@ public class DiscoveryController {
                         String fileName = file.getOriginalFilename();
                         String extensionName = StringUtils.substringAfter(fileName, ".");
                         String newFileName = String.valueOf(System.currentTimeMillis()) + "." + extensionName;
-                        String datdDirectory = organizationId.concat(File.separator).concat(departmentId).concat(File.separator).concat(userId).concat(File.separator);
-                        String filePath = webUploadPath.concat(datdDirectory);
+                        String dataDirectory = organizationId.concat(File.separator).concat(departmentId).concat(File.separator).concat(userId).concat(File.separator);
+                        String filePath = webUploadPath.concat(dataDirectory);
                         File dest = new File(filePath, newFileName);
                         if (!dest.getParentFile().exists()) {
                             dest.getParentFile().mkdirs();
                         }
 
                         file.transferTo(dest);
-                        String imageUrl = "/api/image/".concat(datdDirectory).concat(newFileName);
+                        String imageUrl = "/api/image/".concat(dataDirectory).concat(newFileName);
                         Image image = new Image();
                         image.setUrl(sysUser.getId());
                         image.setUrl(imageUrl);
@@ -133,6 +142,8 @@ public class DiscoveryController {
         discovery.setImageSet(imageSet);
 
         discoveryRepository.save(discovery);
+
+        iProcessInstanceService.createProcessInstance(discovery.getId(), userId);
 
         return ResponseEntity.created(URI.create(request.getRequestURI().concat(File.separator).concat(discovery.getId()).toString())).body(ApiBaseResponse.fromHttpStatus(HttpStatus.CREATED, discovery));
 
