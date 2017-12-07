@@ -125,6 +125,7 @@ public class ProcessInstanceService implements IProcessInstanceService {
             taskInstance.setTaskState("COMPLETED");
             taskInstance.setEndTime(LocalDateTime.now());
             taskInstance.setTaskUserID(userId);
+            taskInstance.setPreTaskInstance(taskInstance.getProcessInstanceId().concat(";"));
             taskInstanceRepository.save(taskInstance);
         } else if ("END".equals(task.getNodeType())) {
 
