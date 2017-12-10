@@ -45,4 +45,24 @@ public class Task extends AbstractTimestampEntity {
 
     //节点类型（开始、结束节点或任务节点）Start、End和TaskNode
     private String nodeType;
+    //WAIT / COMPLETED
+    private String state;
+
+    public Task(String fromUserId, String fromUserName, String fromDepartmentId, String fromDepartmentName) {
+        this.fromUserId = fromUserId;
+        this.fromUserName = fromUserName;
+        this.fromDepartmentId = fromDepartmentId;
+        this.fromDepartmentName = fromDepartmentName;
+    }
+
+    public Task(String fromUserId, String fromUserName, String fromDepartmentId, String fromDepartmentName, String toDepartmentId, String toDepartmentName, String toUserId, String toUserName) {
+        this.fromUserId = fromUserId;
+        this.fromUserName = fromUserName;
+        this.fromDepartmentId = fromDepartmentId;
+        this.fromDepartmentName = fromDepartmentName;
+        this.toDepartmentId = toDepartmentId;
+        this.toDepartmentName = toDepartmentName;
+        this.toUserId = toUserId;
+        this.toUserName = toUserName;
+    }
 }

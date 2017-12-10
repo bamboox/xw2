@@ -130,23 +130,38 @@ public class DiscoveryController {
         wfe.setCreateUserId(userId);
         wfe.setCreateDepartmentId(departmentId);
         wfe.setToDepartmentId(sendDepartmentId);
+        wfe.setState("JUST_CREATED");
+
+        Task createTask = new Task();
+        createTask.setFromDepartmentId(departmentId);
+        createTask.setFromDepartmentName(department.getName());
+        createTask.setFromUserId(userId);
+        createTask.setFromUserName(sysUser.getName());
+
+        createTask.setToDepartmentId(departmentId);
+        createTask.setToDepartmentName(department.getName());
+        createTask.setToUserId(userId);
+        createTask.setToUserName(sysUser.getName());
+
+        createTask.setNodeType("START");
+        createTask.setState("COMPLETED");
+        createTask.setWfe(wfe);
 
 
         Task task = new Task();
         task.setFromDepartmentId(departmentId);
+        task.setFromDepartmentName(department.getName());
         task.setFromUserId(userId);
-        task.setFromUserName(sysUser.getUsername());
+        task.setFromUserName(sysUser.getName());
+
         task.setToDepartmentId(sendDepartmentId);
         task.setToDepartmentName(department.getName());
+
         task.setNodeType("TASK_NODE");
+        task.setState("WAIT");
         task.setWfe(wfe);
 
-        Task createTask = new Task();
-        createTask.setToDepartmentId(departmentId);
-        createTask.setToUserId(userId);
-        createTask.setToDepartmentName(department.getName());
-        createTask.setNodeType("START");
-        createTask.setWfe(wfe);
+
 
         Set<Task> taskSet = new HashSet<>();
         taskSet.add(createTask);

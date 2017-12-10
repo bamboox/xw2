@@ -22,6 +22,7 @@ import java.util.List;
 public class SysUser extends AbstractTimestampEntity implements UserDetails {
 
     private String username;
+    private String name;
     @JSONField(serialize = false)
     private String password;
     @JSONField(serialize = false)

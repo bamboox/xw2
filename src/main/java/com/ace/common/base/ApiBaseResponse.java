@@ -1,12 +1,9 @@
 package com.ace.common.base;
 
 import com.alibaba.fastjson.annotation.JSONField;
-
-import groovy.transform.CompileStatic;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -61,7 +58,14 @@ public class ApiBaseResponse {
                 data
         );
     }
-
+    public static ApiBaseResponse fromHttpStatus(HttpStatus httpStatus) {
+        return new ApiBaseResponse(
+                httpStatus.toString(),
+                httpStatus.getReasonPhrase(),
+                UUID.randomUUID().toString(),
+                ""
+        );
+    }
     public static ResponseEntity toResponseEntity(HttpStatus httpStatus, String requestId) {
         return new ResponseEntity(ApiBaseResponse.fromHttpStatus(httpStatus, requestId), httpStatus);
     }

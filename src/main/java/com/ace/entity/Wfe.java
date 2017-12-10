@@ -1,7 +1,6 @@
 package com.ace.entity;
 
 import com.ace.common.jpa.AbstractTimestampEntity;
-import com.alibaba.fastjson.annotation.JSONField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -33,6 +32,8 @@ public class Wfe extends AbstractTimestampEntity {
 
     @OneToMany(cascade = {CascadeType.ALL},mappedBy = "wfe")
     @OrderBy("gmtCreated ASC")
-    @JSONField(serialize = false)
+//    @JSONField(serialize = false)
     private Set<Task> taskSet = new HashSet<>();
+    //JUST_CREATED、RUNNING、COMPLETED
+    private String state;
 }
