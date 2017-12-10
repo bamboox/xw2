@@ -17,15 +17,15 @@ import java.util.UUID;
 public class ProcessInstanceService implements IProcessInstanceService {
     ProcessInstanceRepository processInstanceRepository;
     ProcessRepository processRepository;
-    TaskRepository taskRepository;
+    WfeTaskRepository wfeTaskRepository;
     TransferRepository transferRepository;
     TaskInstanceRepository taskInstanceRepository;
 
     @Autowired
-    public ProcessInstanceService(ProcessInstanceRepository processInstanceRepository, ProcessRepository processRepository, TaskRepository taskRepository, TransferRepository transferRepository, TaskInstanceRepository taskInstanceRepository) {
+    public ProcessInstanceService(ProcessInstanceRepository processInstanceRepository, ProcessRepository processRepository, WfeTaskRepository wfeTaskRepository, TransferRepository transferRepository, TaskInstanceRepository taskInstanceRepository) {
         this.processInstanceRepository = processInstanceRepository;
         this.processRepository = processRepository;
-        this.taskRepository = taskRepository;
+        this.wfeTaskRepository = wfeTaskRepository;
         this.transferRepository = transferRepository;
         this.taskInstanceRepository = taskInstanceRepository;
     }
@@ -38,7 +38,7 @@ public class ProcessInstanceService implements IProcessInstanceService {
         //
         Process process = processRepository.findOne(processId);
 
-        Task start = taskRepository.findByNodeTypeAndProcess_id("START", processId);
+        WfeTask start = wfeTaskRepository.findByNodeTypeAndProcess_id("START", processId);
 
 
         List<Transfer> toTransfers = transferRepository.findByFromTaskIdAndProcess_id(start.getId(), processId);
@@ -84,27 +84,27 @@ public class ProcessInstanceService implements IProcessInstanceService {
 
     @Override
     public List<TaskInstance> getJustCreatedProcessInstance(String departmentId) {
-        Task task = taskRepository.findByAssignedRoleAndProcess_id(departmentId, processId);
+        WfeTask task = wfeTaskRepository.findByAssignedRoleAndProcess_id(departmentId, processId);
         return taskInstanceRepository.findByTaskIdAndTaskState(task.getId(), "JUST_CREATED");
 
     }
 
     @Override
     public List<TaskInstance> getRunningProcessInstance(String departmentId) {
-        Task task = taskRepository.findByAssignedRoleAndProcess_id(departmentId, processId);
+        WfeTask task = wfeTaskRepository.findByAssignedRoleAndProcess_id(departmentId, processId);
         return taskInstanceRepository.findByTaskIdAndTaskState(task.getId(), "RUNNING");
     }
 
     @Override
     public List<TaskInstance> getCompletedProcessInstance(String departmentId) {
-        Task task = taskRepository.findByAssignedRoleAndProcess_id(departmentId, processId);
+        WfeTask task = wfeTaskRepository.findByAssignedRoleAndProcess_id(departmentId, processId);
         return taskInstanceRepository.findByTaskIdAndTaskState(task.getId(), "COMPLETED");
     }
 
     @Override
     public void doNextProcessInstance(String taskInstanceId, String userId) {
         TaskInstance taskInstance = taskInstanceRepository.findOne(taskInstanceId);
-        Task task = taskRepository.findOne(taskInstance.getTaskId());
+        WfeTask task = wfeTaskRepository.findOne(taskInstance.getTaskId());
 
         if ("TASK_NODE".equals(task.getNodeType())) {
             List<Transfer> toTransfers = transferRepository.findByFromTaskIdAndProcess_id(task.getId(), processId);

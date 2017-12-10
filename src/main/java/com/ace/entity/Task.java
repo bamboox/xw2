@@ -12,33 +12,37 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Created by bamboo on 17-11-29.
- */
-
 @Data
-@EqualsAndHashCode(exclude = "imageSet")
+@EqualsAndHashCode(exclude = {"imageSet", "wfe"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "discovery")
-public class Discovery extends AbstractTimestampEntity {
+@Table(name = "task")
+public class Task extends AbstractTimestampEntity {
 
-    private Double latitude;
-    private Double longitude;
-    private String location;
 
-    private String description;
+    private String fromUserId;
+    private String fromUserName;
 
+    private String fromDepartmentId;
+    private String fromDepartmentName;
+
+    private String toDepartmentId;
+    private String toDepartmentName;
+
+    private String toUserId;
+    private String toUserName;
+
+    private String message;
     @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     @OrderBy("gmtCreated ASC")
     private Set<Image> imageSet = new HashSet<Image>();
-    private String userId;
-    private String departmentId;
 
-    //JUST_CREATED RUNNING COMPLETED
-    private String state;
-    @OneToOne(mappedBy = "discovery")
+    @ManyToOne(fetch=FetchType.LAZY,optional=true)
+    @JoinColumn(name = "wfe_id")
     @JSONField(serialize = false)
     private Wfe wfe;
+
+    //节点类型（开始、结束节点或任务节点）Start、End和TaskNode
+    private String nodeType;
 }

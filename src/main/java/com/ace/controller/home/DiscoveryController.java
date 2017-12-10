@@ -2,11 +2,16 @@ package com.ace.controller.home;
 
 import com.ace.common.base.ApiBaseResponse;
 import com.ace.entity.Discovery;
+import com.ace.entity.Task;
+import com.ace.entity.Wfe;
 import com.ace.entity.file.Image;
 import com.ace.entity.user.Department;
 import com.ace.entity.user.SysUser;
 import com.ace.repository.DiscoveryRepository;
+import com.ace.repository.TaskRepository;
+import com.ace.repository.WfeRepository;
 import com.ace.repository.wfe.IProcessInstanceService;
+import com.ace.util.ImageHelp;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -26,7 +31,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.thymeleaf.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -48,12 +52,16 @@ public class DiscoveryController {
     private final ResourceLoader resourceLoader;
     private DiscoveryRepository discoveryRepository;
     private IProcessInstanceService iProcessInstanceService;
+    private TaskRepository taskRepository;
+    private WfeRepository wfeRepository;
 
     @Autowired
-    public DiscoveryController(ResourceLoader resourceLoader, DiscoveryRepository discoveryRepository, IProcessInstanceService iProcessInstanceService) {
+    public DiscoveryController(ResourceLoader resourceLoader, DiscoveryRepository discoveryRepository, IProcessInstanceService iProcessInstanceService, TaskRepository taskRepository, WfeRepository wfeRepository) {
         this.resourceLoader = resourceLoader;
         this.discoveryRepository = discoveryRepository;
         this.iProcessInstanceService = iProcessInstanceService;
+        this.taskRepository = taskRepository;
+        this.wfeRepository = wfeRepository;
     }
 
     @RequestMapping(
@@ -110,40 +118,42 @@ public class DiscoveryController {
 
         //
 
-        Set<Image> imageSet = new HashSet<>();
+        Set<Image> imageSet = ImageHelp.save2Disk(files, webUploadPath, organizationId, departmentId, userId);
 
-        for (MultipartFile file : files) {
-            if (!file.isEmpty()) {
-                if (file.getContentType().contains("image")) {
-                    try {
-                        String fileName = file.getOriginalFilename();
-                        String extensionName = StringUtils.substringAfter(fileName, ".");
-                        String newFileName = String.valueOf(System.currentTimeMillis()) + "." + extensionName;
-                        String dataDirectory = organizationId.concat(File.separator).concat(departmentId).concat(File.separator).concat(userId).concat(File.separator);
-                        String filePath = webUploadPath.concat(dataDirectory);
-                        File dest = new File(filePath, newFileName);
-                        if (!dest.getParentFile().exists()) {
-                            dest.getParentFile().mkdirs();
-                        }
-
-                        file.transferTo(dest);
-                        String imageUrl = "/api/image/".concat(dataDirectory).concat(newFileName);
-                        Image image = new Image();
-                        image.setUrl(sysUser.getId());
-                        image.setUrl(imageUrl);
-                        image.setUserId(userId);
-                        imageSet.add(image);
-                    } catch (Exception e) {
-                        return ResponseEntity.badRequest().body("");
-                    }
-                }
-            }
-        }
         discovery.setImageSet(imageSet);
-
+        discovery.setState("RUNNING");
         discoveryRepository.save(discovery);
 
-        iProcessInstanceService.createProcessInstance(discovery.getId(), userId);
+
+        Wfe wfe = new Wfe();
+        wfe.setDiscovery(discovery);
+        wfe.setCreateUserId(userId);
+        wfe.setCreateDepartmentId(departmentId);
+        wfe.setToDepartmentId(sendDepartmentId);
+
+
+        Task task = new Task();
+        task.setFromDepartmentId(departmentId);
+        task.setFromUserId(userId);
+        task.setFromUserName(sysUser.getUsername());
+        task.setToDepartmentId(sendDepartmentId);
+        task.setToDepartmentName(department.getName());
+        task.setNodeType("TASK_NODE");
+        task.setWfe(wfe);
+
+        Task createTask = new Task();
+        createTask.setToDepartmentId(departmentId);
+        createTask.setToUserId(userId);
+        createTask.setToDepartmentName(department.getName());
+        createTask.setNodeType("START");
+        createTask.setWfe(wfe);
+
+        Set<Task> taskSet = new HashSet<>();
+        taskSet.add(createTask);
+        taskSet.add(task);
+        wfe.setTaskSet(taskSet);
+        wfeRepository.save(wfe);
+        /*iProcessInstanceService.createProcessInstance(discovery.getId(), userId);*/
 
         return ResponseEntity.created(URI.create(request.getRequestURI().concat(File.separator).concat(discovery.getId()).toString())).body(ApiBaseResponse.fromHttpStatus(HttpStatus.CREATED, discovery));
 

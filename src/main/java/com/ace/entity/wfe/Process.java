@@ -40,7 +40,7 @@ public class Process extends AbstractTimestampEntity {
     private int dueDate;
 
     @OneToMany(mappedBy = "process", cascade = CascadeType.ALL)
-    private Set<Task> tasks = new HashSet<>();
+    private Set<WfeTask> tasks = new HashSet<>();
 
     @OneToMany(mappedBy = "process", cascade = CascadeType.ALL)
     private Set<Transfer> transfers = new HashSet<>();

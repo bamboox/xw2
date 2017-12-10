@@ -22,7 +22,7 @@ import javax.persistence.Table;
 @Entity
 @Data
 @Table(name = "wfe_task")
-public class Task extends AbstractTimestampEntity {
+public class WfeTask extends AbstractTimestampEntity {
 
     //节点（任务）名称
     private String taskName;
