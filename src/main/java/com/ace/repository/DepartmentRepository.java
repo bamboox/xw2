@@ -7,4 +7,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface DepartmentRepository extends ReadOnlyPagingAndSortingRepository<Department, String> {
     Page<Department> findAllByOrganization_IdAndNameContaining(String oId,String name, Pageable pageable);
+    Page<Department> findAllByOrganization_IdAndNameContainingAndIdNot(String oId,String name, String thisId,Pageable pageable);
 }

@@ -140,7 +140,7 @@ public class WfeController {
         if("doing".equals(operate)){
             task.setToUserId(userId);
             task.setToUserName(sysUser.getName());
-            task.setState("COMPLETED");
+            task.setState("WAIT");
             task.setMessage(message);
 
             Set<Image> imageSet = ImageHelp.save2Disk(files, webUploadPath, organizationId, departmentId, userId);
@@ -159,16 +159,18 @@ public class WfeController {
             createTask.setToDepartmentName(department.getName());
 
             createTask.setNodeType("TASK_NODE");
-            createTask.setState("WAIT");
+            createTask.setState("UNSTATE");
+            createTask.setNextOperate("pass;refuse");
             createTask.setWfe(wfe);
 
             taskRepository.save(createTask);
             wfe.setState("RUNNING");
             wfeRepository.save(wfe);
+
         }else if ("pass".equals(operate)) {
             task.setToUserId(userId);
             task.setToUserName(sysUser.getName());
-            task.setState("COMPLETED");
+            task.setState("PASS");
             task.setMessage(message);
             taskRepository.save(task);
 
@@ -190,7 +192,7 @@ public class WfeController {
         }else if ("refuse".equals(operate)) {
             task.setToUserId(userId);
             task.setToUserName(sysUser.getName());
-            task.setState("COMPLETED");
+            task.setState("REFUSE");
             task.setMessage(message);
             taskRepository.save(task);
 
@@ -204,7 +206,8 @@ public class WfeController {
             createTask.setToDepartmentName(task.getFromDepartmentName());
 
             createTask.setNodeType("TASK_NODE");
-            createTask.setState("WAIT");
+            createTask.setState("UNSTATE");
+            createTask.setNextOperate("doing");
             createTask.setWfe(wfe);
 
             taskRepository.save(createTask);

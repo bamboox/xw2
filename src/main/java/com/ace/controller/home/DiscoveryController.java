@@ -144,7 +144,8 @@ public class DiscoveryController {
         createTask.setToUserName(sysUser.getName());
 
         createTask.setNodeType("START");
-        createTask.setState("COMPLETED");
+        createTask.setState("START");
+        createTask.setNextOperate("recall");
         createTask.setWfe(wfe);
 
 
@@ -158,7 +159,8 @@ public class DiscoveryController {
         task.setToDepartmentName(department.getName());
 
         task.setNodeType("TASK_NODE");
-        task.setState("WAIT");
+        task.setState("UNSTATE");
+        task.setNextOperate("doing");
         task.setWfe(wfe);
 
 

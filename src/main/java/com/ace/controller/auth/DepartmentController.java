@@ -35,7 +35,8 @@ public class DepartmentController {
                                                    Pageable pageable,@RequestParam(value = "name",defaultValue = "")String name) {
         SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String oId = sysUser.getDepartment().getOrganization().getId();
+        String id = sysUser.getDepartment().getId();
 
-        return departmentRepository.findAllByOrganization_IdAndNameContaining(oId,name,pageable);
+        return departmentRepository.findAllByOrganization_IdAndNameContainingAndIdNot(oId,name,id,pageable);
     }
 }
