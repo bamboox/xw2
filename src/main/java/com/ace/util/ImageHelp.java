@@ -14,7 +14,8 @@ import java.util.Set;
  * Created by bamboo on 17-11-28.
  */
 public class ImageHelp {
-    public final static QiNiu qiNiu= new QiNiu();
+    public final static QiNiu qiNiu = new QiNiu();
+
     public static Set<Image> save2Disk(MultipartFile files[], String webUploadPath, String organizationId, String departmentId, String userId) {
         Set<Image> imageSet = new HashSet<>();
         for (MultipartFile file : files) {
@@ -45,17 +46,19 @@ public class ImageHelp {
         }
         return imageSet;
     }
+
     public static Set<Image> save2Qiniu(MultipartFile files[], String webUploadPath, String organizationId, String departmentId, String userId) {
         Set<Image> imageSet = new HashSet<>();
         for (MultipartFile file : files) {
             if (!file.isEmpty()) {
                 if (file.getContentType().contains("image")) {
                     try {
-                        String key=String.valueOf(System.currentTimeMillis());
+
+                        String key = organizationId + "_" + departmentId + "_" + userId + "_" + String.valueOf(System.currentTimeMillis());
                         // Lambda Runnable
                         Runnable task2 = () -> {
                             try {
-                                qiNiu.upload(ByteStreams.toByteArray(file.getInputStream()),key);
+                                qiNiu.upload(ByteStreams.toByteArray(file.getInputStream()), key);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
