@@ -121,7 +121,7 @@ public class DiscoveryController {
 
         //
 
-        Set<Image> imageSet = ImageHelp.save2Disk(files, webUploadPath, organizationId, departmentId, userId);
+        Set<Image> imageSet = ImageHelp.save2Qiniu(files, webUploadPath, organizationId, departmentId, userId);
 
         discovery.setImageSet(imageSet);
         discovery.setState("RUNNING");

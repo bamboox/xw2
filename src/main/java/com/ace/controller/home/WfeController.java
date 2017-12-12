@@ -143,7 +143,7 @@ public class WfeController {
             task.setState("WAIT");
             task.setMessage(message);
 
-            Set<Image> imageSet = ImageHelp.save2Disk(files, webUploadPath, organizationId, departmentId, userId);
+            Set<Image> imageSet = ImageHelp.save2Qiniu(files, webUploadPath, organizationId, departmentId, userId);
             task.setImageSet(imageSet);
 
             taskRepository.save(task);
