@@ -7,6 +7,7 @@ import com.ace.entity.Wfe;
 import com.ace.entity.file.Image;
 import com.ace.entity.user.Department;
 import com.ace.entity.user.SysUser;
+import com.ace.repository.DepartmentRepository;
 import com.ace.repository.DiscoveryRepository;
 import com.ace.repository.TaskRepository;
 import com.ace.repository.WfeRepository;
@@ -54,14 +55,16 @@ public class DiscoveryController {
     private IProcessInstanceService iProcessInstanceService;
     private TaskRepository taskRepository;
     private WfeRepository wfeRepository;
+    private DepartmentRepository departmentRepository;
 
     @Autowired
-    public DiscoveryController(ResourceLoader resourceLoader, DiscoveryRepository discoveryRepository, IProcessInstanceService iProcessInstanceService, TaskRepository taskRepository, WfeRepository wfeRepository) {
+    public DiscoveryController(ResourceLoader resourceLoader, DiscoveryRepository discoveryRepository, IProcessInstanceService iProcessInstanceService, TaskRepository taskRepository, WfeRepository wfeRepository,DepartmentRepository departmentRepository) {
         this.resourceLoader = resourceLoader;
         this.discoveryRepository = discoveryRepository;
         this.iProcessInstanceService = iProcessInstanceService;
         this.taskRepository = taskRepository;
         this.wfeRepository = wfeRepository;
+        this.departmentRepository = departmentRepository;
     }
 
     @RequestMapping(
@@ -156,7 +159,7 @@ public class DiscoveryController {
         task.setFromUserName(sysUser.getName());
 
         task.setToDepartmentId(sendDepartmentId);
-        task.setToDepartmentName(department.getName());
+        task.setToDepartmentName(departmentRepository.findOne(sendDepartmentId).getName());
 
         task.setNodeType("TASK_NODE");
         task.setState("UNSTATE");
