@@ -8,7 +8,7 @@ import com.ace.entity.user.Department;
 import com.ace.entity.user.SysUser;
 import com.ace.repository.TaskRepository;
 import com.ace.repository.WfeRepository;
-import com.ace.util.ImageHelp;
+import com.ace.service.AsyncTaskService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,11 +40,13 @@ public class WfeController {
     @Value("${web.upload-path}")
     private String webUploadPath;
     private final ResourceLoader resourceLoader;
+    private AsyncTaskService asyncTaskService;
     @Autowired
-    public WfeController(TaskRepository taskRepository, WfeRepository wfeRepository, ResourceLoader resourceLoader) {
+    public WfeController(TaskRepository taskRepository, WfeRepository wfeRepository, ResourceLoader resourceLoader,AsyncTaskService asyncTaskService) {
         this.taskRepository = taskRepository;
         this.wfeRepository = wfeRepository;
         this.resourceLoader = resourceLoader;
+        this.asyncTaskService = asyncTaskService;
     }
 
     @RequestMapping(value = "wait",
@@ -143,7 +145,10 @@ public class WfeController {
             task.setState("WAIT");
             task.setMessage(message);
 
-            Set<Image> imageSet = ImageHelp.save2Qiniu(files, webUploadPath, organizationId, departmentId, userId);
+            String keyPrefix = organizationId + "_" + departmentId + "_" + userId + "_" + String.valueOf(System.currentTimeMillis());
+
+            Set<Image> imageSet = asyncTaskService.save2Qiniu(files, keyPrefix,userId);
+            asyncTaskService.uploadQiniu(keyPrefix,files);
             task.setImageSet(imageSet);
 
             taskRepository.save(task);

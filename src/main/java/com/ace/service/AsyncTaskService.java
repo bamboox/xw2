@@ -1,6 +1,10 @@
-package com.ace.util;
+package com.ace.service;
 
 import com.ace.entity.file.Image;
+import com.ace.util.QiNiu;
+import com.google.common.io.ByteStreams;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.util.StringUtils;
 
@@ -9,11 +13,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Created by bamboo on 17-11-28.
+ * Created by bamboo on 17-12-13.
  */
-public class ImageHelp {
+@Service
+public class AsyncTaskService {
+    public final static QiNiu qiNiu = new QiNiu();
 
-    public static Set<Image> save2Disk(MultipartFile files[], String webUploadPath, String organizationId, String departmentId, String userId) {
+    public Set<Image> save2Disk(MultipartFile files[], String webUploadPath, String organizationId, String departmentId, String userId) {
         Set<Image> imageSet = new HashSet<>();
         for (MultipartFile file : files) {
             if (!file.isEmpty()) {
@@ -44,27 +50,24 @@ public class ImageHelp {
         return imageSet;
     }
 
-    /*public static Set<Image> save2Qiniu(MultipartFile files[], String webUploadPath, String organizationId, String departmentId, String userId) {
+    public Set<Image> save2Qiniu(MultipartFile files[], String keyPrefix, String userId) {
         Set<Image> imageSet = new HashSet<>();
-        String keyPrefix = organizationId + "_" + departmentId + "_" + userId + "_" + String.valueOf(System.currentTimeMillis());
         for (int i = 0; i < files.length; i++) {
             MultipartFile file = files[i];
             if (!file.isEmpty()) {
                 if (file.getContentType().contains("image")) {
                     Image image = new Image();
-                    image.setUrl(userId);
                     image.setUrl("http://orahxdcid.bkt.clouddn.com/".concat(keyPrefix).concat(String.valueOf(i)));
                     image.setUserId(userId);
                     imageSet.add(image);
                 }
             }
         }
-        System.out.println(1);
-        uploadQiniu(keyPrefix,files);
-        System.out.println(2);
         return imageSet;
     }
-    private static void uploadQiniu(String keyPrefix, MultipartFile files[]) {
+
+    @Async
+    public void uploadQiniu(String keyPrefix, MultipartFile files[]) {
         for (int i = 0; i < files.length; i++) {
             MultipartFile file = files[i];
             if (!file.isEmpty()) {
@@ -77,6 +80,5 @@ public class ImageHelp {
                 }
             }
         }
-        System.out.println(3);
-    }*/
+    }
 }

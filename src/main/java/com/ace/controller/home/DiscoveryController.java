@@ -12,7 +12,7 @@ import com.ace.repository.DiscoveryRepository;
 import com.ace.repository.TaskRepository;
 import com.ace.repository.WfeRepository;
 import com.ace.repository.wfe.IProcessInstanceService;
-import com.ace.util.ImageHelp;
+import com.ace.service.AsyncTaskService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -56,15 +56,18 @@ public class DiscoveryController {
     private TaskRepository taskRepository;
     private WfeRepository wfeRepository;
     private DepartmentRepository departmentRepository;
+    private AsyncTaskService asyncTaskService;
 
     @Autowired
-    public DiscoveryController(ResourceLoader resourceLoader, DiscoveryRepository discoveryRepository, IProcessInstanceService iProcessInstanceService, TaskRepository taskRepository, WfeRepository wfeRepository,DepartmentRepository departmentRepository) {
+    public DiscoveryController(ResourceLoader resourceLoader, DiscoveryRepository discoveryRepository, IProcessInstanceService iProcessInstanceService, TaskRepository taskRepository, WfeRepository wfeRepository,DepartmentRepository departmentRepository,AsyncTaskService asyncTaskService) {
         this.resourceLoader = resourceLoader;
         this.discoveryRepository = discoveryRepository;
         this.iProcessInstanceService = iProcessInstanceService;
         this.taskRepository = taskRepository;
         this.wfeRepository = wfeRepository;
         this.departmentRepository = departmentRepository;
+        this.asyncTaskService = asyncTaskService;
+
     }
 
     @RequestMapping(
@@ -121,8 +124,9 @@ public class DiscoveryController {
 
         //
 
-        Set<Image> imageSet = ImageHelp.save2Qiniu(files, webUploadPath, organizationId, departmentId, userId);
-
+        String keyPrefix = organizationId + "_" + departmentId + "_" + userId + "_" + String.valueOf(System.currentTimeMillis());
+        Set<Image> imageSet = asyncTaskService.save2Qiniu(files, keyPrefix,userId);
+        asyncTaskService.uploadQiniu(keyPrefix,files);
         discovery.setImageSet(imageSet);
         discovery.setState("RUNNING");
         discoveryRepository.save(discovery);
