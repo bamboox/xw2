@@ -1,6 +1,7 @@
 package com.ace.controller.home;
 
 import com.ace.common.base.ApiBaseResponse;
+import com.ace.common.exception.DataFormatException;
 import com.ace.entity.Task;
 import com.ace.entity.Wfe;
 import com.ace.entity.file.Image;
@@ -126,6 +127,9 @@ public class WfeController {
                                         @RequestParam("operate") String operate,
                                         @RequestParam("message") String message,
                                         HttpServletRequest request) {
+        if(files.length>6){
+            throw new DataFormatException("files length max 6");
+        }
         //operate pass
         //operate refuse
         //operate recall

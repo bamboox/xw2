@@ -1,6 +1,7 @@
 package com.ace.controller.home;
 
 import com.ace.common.base.ApiBaseResponse;
+import com.ace.common.exception.DataFormatException;
 import com.ace.entity.Discovery;
 import com.ace.entity.Task;
 import com.ace.entity.Wfe;
@@ -59,7 +60,7 @@ public class DiscoveryController {
     private AsyncTaskService asyncTaskService;
 
     @Autowired
-    public DiscoveryController(ResourceLoader resourceLoader, DiscoveryRepository discoveryRepository, IProcessInstanceService iProcessInstanceService, TaskRepository taskRepository, WfeRepository wfeRepository,DepartmentRepository departmentRepository,AsyncTaskService asyncTaskService) {
+    public DiscoveryController(ResourceLoader resourceLoader, DiscoveryRepository discoveryRepository, IProcessInstanceService iProcessInstanceService, TaskRepository taskRepository, WfeRepository wfeRepository, DepartmentRepository departmentRepository, AsyncTaskService asyncTaskService) {
         this.resourceLoader = resourceLoader;
         this.discoveryRepository = discoveryRepository;
         this.iProcessInstanceService = iProcessInstanceService;
@@ -99,14 +100,20 @@ public class DiscoveryController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "Create a Discovery resource.", notes = "Returns the URL of the new resource in the Location header.")
-    public ResponseEntity<?> submit(@RequestParam("file") MultipartFile files[],
+    public ResponseEntity<?> submit(@RequestParam(value = "file", required = true)MultipartFile files[],
                                     @RequestParam Double latitude,
                                     @RequestParam Double longitude,
                                     @RequestParam String location,
                                     @RequestParam String description,
-                                    @RequestParam String sendDepartmentId,
+                                    @RequestParam(required = true) String sendDepartmentId,
                                     HttpServletRequest request) {
         logger.debug("files:" + files.length);
+
+        if(files.length>6){
+            throw new DataFormatException("files length max 6");
+        }
+
+
         SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userId = sysUser.getId();
         Department department = sysUser.getDepartment();
@@ -125,8 +132,8 @@ public class DiscoveryController {
         //
 
         String keyPrefix = organizationId + "_" + departmentId + "_" + userId + "_" + String.valueOf(System.currentTimeMillis());
-        Set<Image> imageSet = asyncTaskService.save2Qiniu(files, keyPrefix,userId);
-        asyncTaskService.uploadQiniu(keyPrefix,files);
+        Set<Image> imageSet = asyncTaskService.save2Qiniu(files, keyPrefix, userId);
+        asyncTaskService.uploadQiniu(keyPrefix, files);
         discovery.setImageSet(imageSet);
         discovery.setState("RUNNING");
         discoveryRepository.save(discovery);
@@ -169,7 +176,6 @@ public class DiscoveryController {
         task.setState("UNSTATE");
         task.setNextOperate("doing");
         task.setWfe(wfe);
-
 
 
         Set<Task> taskSet = new HashSet<>();

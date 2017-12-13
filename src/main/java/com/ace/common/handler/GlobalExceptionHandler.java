@@ -1,11 +1,12 @@
 package com.ace.common.handler;
 
+import com.ace.common.base.ApiBaseResponse;
 import com.ace.common.exception.DataFormatException;
-import com.ace.common.exception.ResourceNotFoundException;
-import com.ace.common.model.ApiErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -13,6 +14,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import java.util.stream.Collectors;
 
 /**
  * Created by bamboo on 17-12-1.
@@ -59,7 +63,7 @@ public class GlobalExceptionHandler {
     /**
      * 处理所有接口数据验证异常
      *
-     * @param e
+     * @param
      * @return
      *//*
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -74,16 +78,36 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DataFormatException.class)
     @ResponseBody
-    public ApiErrorResponse handleDataStoreException(DataFormatException ex, WebRequest request, HttpServletResponse response) {
+    public ApiBaseResponse handleDataStoreException(DataFormatException ex, WebRequest request, HttpServletResponse response) {
         LOGGER.info("Converting Data Store exception to RestResponse : " + ex.getMessage());
-        return new ApiErrorResponse(ex.getMessage(), "You messed up.");
+        return ApiBaseResponse.fromHttpStatus(HttpStatus.BAD_REQUEST,ex.getMessage());
     }
-
+    /*
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseBody
     public ApiErrorResponse handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request, HttpServletResponse response) {
         LOGGER.info("ResourceNotFoundException handler:" + ex.getMessage());
         return new ApiErrorResponse(ex.getMessage(), "Sorry I couldn't find it.");
+    }*/
+
+    @ExceptionHandler
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiBaseResponse handle(MethodArgumentNotValidException exception) {
+        return ApiBaseResponse.fromHttpStatus(HttpStatus.BAD_REQUEST,exception.getBindingResult().getFieldErrors()
+                .stream()
+                .map(FieldError::getDefaultMessage)
+                .collect(Collectors.toList()));
+    }
+
+    @ExceptionHandler
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiBaseResponse handle(ConstraintViolationException exception) {
+        return ApiBaseResponse.fromHttpStatus(HttpStatus.BAD_REQUEST,exception.getConstraintViolations()
+                .stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.toList()));
     }
 }
