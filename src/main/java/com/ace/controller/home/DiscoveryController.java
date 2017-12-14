@@ -146,6 +146,8 @@ public class DiscoveryController {
         wfe.setToDepartmentId(sendDepartmentId);
         wfe.setState("JUST_CREATED");
 
+
+
         Task createTask = new Task();
         createTask.setFromDepartmentId(departmentId);
         createTask.setFromDepartmentName(department.getName());
@@ -161,7 +163,7 @@ public class DiscoveryController {
         createTask.setState("START");
         createTask.setNextOperate("recall");
         createTask.setWfe(wfe);
-
+        createTask.setOrderNo(0);
 
         Task task = new Task();
         task.setFromDepartmentId(departmentId);
@@ -176,11 +178,13 @@ public class DiscoveryController {
         task.setState("UNSTATE");
         task.setNextOperate("doing");
         task.setWfe(wfe);
-
+        task.setOrderNo(1);
 
         Set<Task> taskSet = new HashSet<>();
+
         taskSet.add(createTask);
         taskSet.add(task);
+
         wfe.setTaskSet(taskSet);
         wfeRepository.save(wfe);
         /*iProcessInstanceService.createProcessInstance(discovery.getId(), userId);*/

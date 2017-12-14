@@ -47,7 +47,9 @@ public class Task extends AbstractTimestampEntity {
     private String nodeType;
     //WAIT / COMPLETED
     private String state;
+    private int orderNo;
     private String nextOperate;
+
 
     public Task(String fromUserId, String fromUserName, String fromDepartmentId, String fromDepartmentName) {
         this.fromUserId = fromUserId;

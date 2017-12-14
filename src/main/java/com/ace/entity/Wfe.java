@@ -31,7 +31,7 @@ public class Wfe extends AbstractTimestampEntity {
     private Discovery discovery;
 
     @OneToMany(cascade = {CascadeType.ALL},mappedBy = "wfe")
-    @OrderBy("gmtCreated ASC")
+    @OrderBy("orderNo ASC")
 //    @JSONField(serialize = false)
     private Set<Task> taskSet = new HashSet<>();
     //JUST_CREATED、RUNNING、COMPLETED

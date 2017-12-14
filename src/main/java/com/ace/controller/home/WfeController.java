@@ -168,6 +168,7 @@ public class WfeController {
             createTask.setToDepartmentName(department.getName());
 
             createTask.setNodeType("TASK_NODE");
+            createTask.setOrderNo(task.getOrderNo()+1);
             createTask.setState("UNSTATE");
             createTask.setNextOperate("pass;refuse");
             createTask.setWfe(wfe);
@@ -190,6 +191,7 @@ public class WfeController {
             createTask.setFromUserName(sysUser.getName());
 
             createTask.setNodeType("END");
+            createTask.setOrderNo(task.getOrderNo()+1);
             createTask.setState("COMPLETED");
             createTask.setWfe(wfe);
 
@@ -216,6 +218,7 @@ public class WfeController {
 
             createTask.setNodeType("TASK_NODE");
             createTask.setState("UNSTATE");
+            createTask.setOrderNo(task.getOrderNo()+1);
             createTask.setNextOperate("doing");
             createTask.setWfe(wfe);
 
