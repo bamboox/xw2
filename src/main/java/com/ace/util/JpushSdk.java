@@ -13,7 +13,6 @@ import cn.jpush.api.push.model.audience.Audience;
 import cn.jpush.api.push.model.audience.AudienceTarget;
 import cn.jpush.api.push.model.notification.AndroidNotification;
 import cn.jpush.api.push.model.notification.Notification;
-import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,8 +123,8 @@ public class JpushSdk {
                 .build();
     }
 
-    public static void main(String[] args) {
+/*    public static void main(String[] args) {
 //        sendMsgByAlias("666", "777", ImmutableMap.of("id", "1"), "ff808181601707450160170901610000");
-        sendMsgByTag("666", "777", ImmutableMap.of("id", "1"), "1");
-    }
+//        sendMsgByTag("666", "777", ImmutableMap.of("id", "1"), "1");
+    }*/
 }
