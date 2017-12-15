@@ -7,10 +7,14 @@ import com.ace.entity.Wfe;
 import com.ace.entity.file.Image;
 import com.ace.entity.user.Department;
 import com.ace.entity.user.SysUser;
+import com.ace.repository.SysUserRepository;
 import com.ace.repository.TaskRepository;
 import com.ace.repository.WfeRepository;
 import com.ace.service.AsyncTaskService;
+import com.ace.service.MsgService;
+import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
@@ -42,12 +46,17 @@ public class WfeController {
     private String webUploadPath;
     private final ResourceLoader resourceLoader;
     private AsyncTaskService asyncTaskService;
+    private MsgService msgService;
+    private SysUserRepository sysUserRepository;
+
     @Autowired
-    public WfeController(TaskRepository taskRepository, WfeRepository wfeRepository, ResourceLoader resourceLoader,AsyncTaskService asyncTaskService) {
+    public WfeController(TaskRepository taskRepository, WfeRepository wfeRepository, ResourceLoader resourceLoader, AsyncTaskService asyncTaskService, MsgService msgService, SysUserRepository sysUserRepository) {
         this.taskRepository = taskRepository;
         this.wfeRepository = wfeRepository;
         this.resourceLoader = resourceLoader;
         this.asyncTaskService = asyncTaskService;
+        this.msgService = msgService;
+        this.sysUserRepository = sysUserRepository;
     }
 
     @RequestMapping(value = "wait",
@@ -111,7 +120,7 @@ public class WfeController {
         String userId = sysUser.getId();
         String departmentId = sysUser.getDepartment().getId();
 
-        Page<Wfe> wfes = wfeRepository.findDistinctByTaskSet_ToDepartmentIdOrTaskSet_FromDepartmentId(departmentId,departmentId,pageable);
+        Page<Wfe> wfes = wfeRepository.findDistinctByTaskSet_ToDepartmentIdOrTaskSet_FromDepartmentId(departmentId, departmentId, pageable);
         return wfes;
     }
 
@@ -127,7 +136,7 @@ public class WfeController {
                                         @RequestParam("operate") String operate,
                                         @RequestParam("message") String message,
                                         HttpServletRequest request) {
-        if(files.length>6){
+        if (files.length > 6) {
             throw new DataFormatException("files length max 6");
         }
         //operate pass
@@ -143,7 +152,9 @@ public class WfeController {
         Task task = taskRepository.findOne(taskId);
         Wfe wfe = wfeRepository.findOne(wfeId);
 
-        if("doing".equals(operate)){
+        SysUser fromUser = sysUserRepository.findOne(task.getFromUserId());
+
+        if ("doing".equals(operate)) {
             task.setToUserId(userId);
             task.setToUserName(sysUser.getName());
             task.setState("WAIT");
@@ -151,8 +162,8 @@ public class WfeController {
 
             String keyPrefix = organizationId + "_" + departmentId + "_" + userId + "_" + String.valueOf(System.currentTimeMillis());
 
-            Set<Image> imageSet = asyncTaskService.save2Qiniu(files, keyPrefix,userId);
-            asyncTaskService.uploadQiniu(keyPrefix,files);
+            Set<Image> imageSet = asyncTaskService.save2Qiniu(files, keyPrefix, userId);
+            asyncTaskService.uploadQiniu(keyPrefix, files);
             task.setImageSet(imageSet);
 
             taskRepository.save(task);
@@ -168,7 +179,7 @@ public class WfeController {
             createTask.setToDepartmentName(department.getName());
 
             createTask.setNodeType("TASK_NODE");
-            createTask.setOrderNo(task.getOrderNo()+1);
+            createTask.setOrderNo(task.getOrderNo() + 1);
             createTask.setState("UNSTATE");
             createTask.setNextOperate("pass;refuse");
             createTask.setWfe(wfe);
@@ -177,7 +188,10 @@ public class WfeController {
             wfe.setState("RUNNING");
             wfeRepository.save(wfe);
 
-        }else if ("pass".equals(operate)) {
+            String context = fromUser.getName() + "发起反馈!";
+            msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()), task.getFromDepartmentId());
+
+        } else if ("pass".equals(operate)) {
             task.setToUserId(userId);
             task.setToUserName(sysUser.getName());
             task.setState("PASS");
@@ -191,7 +205,7 @@ public class WfeController {
             createTask.setFromUserName(sysUser.getName());
 
             createTask.setNodeType("END");
-            createTask.setOrderNo(task.getOrderNo()+1);
+            createTask.setOrderNo(task.getOrderNo() + 1);
             createTask.setState("COMPLETED");
             createTask.setWfe(wfe);
 
@@ -200,7 +214,10 @@ public class WfeController {
             wfe.setState("COMPLETED");
             wfeRepository.save(wfe);
 
-        }else if ("refuse".equals(operate)) {
+            String context = fromUser.getName() + "发起反馈!";
+            msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()), task.getFromDepartmentId());
+
+        } else if ("refuse".equals(operate)) {
             task.setToUserId(userId);
             task.setToUserName(sysUser.getName());
             task.setState("REFUSE");
@@ -218,11 +235,14 @@ public class WfeController {
 
             createTask.setNodeType("TASK_NODE");
             createTask.setState("UNSTATE");
-            createTask.setOrderNo(task.getOrderNo()+1);
+            createTask.setOrderNo(task.getOrderNo() + 1);
             createTask.setNextOperate("doing");
             createTask.setWfe(wfe);
 
             taskRepository.save(createTask);
+
+            String context = fromUser.getName() + "发起反馈!";
+            msgService.sendMsgByAlias(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()), task.getFromUserId());
 
         }/*else if ("recall".equals(operate)) {
             task.setToUserId(userId);
@@ -247,5 +267,16 @@ public class WfeController {
         return ResponseEntity.created(URI.create(request.getRequestURI().concat(File.separator))).body(ApiBaseResponse.fromHttpStatus(HttpStatus.CREATED));
     }
 
+    @RequestMapping(value = "/{id}",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "Get a single Wfe.", notes = "You have to provide a valid Wfe ID.")
+    @ResponseBody
+    public Wfe getWfe(@ApiParam(value = "The ID of the Wfe.", required = true)
+                      @PathVariable("id") String id
+    ) throws Exception {
 
+        return wfeRepository.findOne(id);
+    }
 }

@@ -35,6 +35,9 @@ public class SysUser extends AbstractTimestampEntity implements UserDetails {
     @JoinColumn(name = "department_id")
     private Department department;
 
+    @Transient
+    private String currentToken;
+
     @JSONField(serialize = false)
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

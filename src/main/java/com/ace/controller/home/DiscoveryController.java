@@ -14,6 +14,8 @@ import com.ace.repository.TaskRepository;
 import com.ace.repository.WfeRepository;
 import com.ace.repository.wfe.IProcessInstanceService;
 import com.ace.service.AsyncTaskService;
+import com.ace.service.MsgService;
+import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -58,9 +60,10 @@ public class DiscoveryController {
     private WfeRepository wfeRepository;
     private DepartmentRepository departmentRepository;
     private AsyncTaskService asyncTaskService;
+    private MsgService msgService;
 
     @Autowired
-    public DiscoveryController(ResourceLoader resourceLoader, DiscoveryRepository discoveryRepository, IProcessInstanceService iProcessInstanceService, TaskRepository taskRepository, WfeRepository wfeRepository, DepartmentRepository departmentRepository, AsyncTaskService asyncTaskService) {
+    public DiscoveryController(ResourceLoader resourceLoader, DiscoveryRepository discoveryRepository, IProcessInstanceService iProcessInstanceService, TaskRepository taskRepository, WfeRepository wfeRepository, DepartmentRepository departmentRepository, AsyncTaskService asyncTaskService, MsgService msgService) {
         this.resourceLoader = resourceLoader;
         this.discoveryRepository = discoveryRepository;
         this.iProcessInstanceService = iProcessInstanceService;
@@ -68,6 +71,7 @@ public class DiscoveryController {
         this.wfeRepository = wfeRepository;
         this.departmentRepository = departmentRepository;
         this.asyncTaskService = asyncTaskService;
+        this.msgService = msgService;
 
     }
 
@@ -187,6 +191,10 @@ public class DiscoveryController {
 
         wfe.setTaskSet(taskSet);
         wfeRepository.save(wfe);
+
+        String context=department.getName()+"部门发起反馈!";
+        msgService.sendMsgByTag(context,"您有新任务来了!",ImmutableMap.of("id",wfe.getId()),sendDepartmentId);
+
         /*iProcessInstanceService.createProcessInstance(discovery.getId(), userId);*/
 
         return ResponseEntity.created(URI.create(request.getRequestURI().concat(File.separator).concat(discovery.getId()).toString())).body(ApiBaseResponse.fromHttpStatus(HttpStatus.CREATED, discovery));

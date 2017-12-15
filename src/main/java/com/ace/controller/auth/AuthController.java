@@ -1,9 +1,9 @@
 package com.ace.controller.auth;
 
+import com.ace.common.base.ApiBaseResponse;
 import com.ace.entity.user.SysUser;
 import com.ace.repository.AuthService;
 import com.ace.repository.SysUserRepository;
-import com.ace.service.JwtAuthenticationResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
 
 @Api(value = "用户controller", description = "用户操作")
 @RestController
@@ -33,11 +31,12 @@ public class AuthController {
     public ResponseEntity<?> createAuthenticationToken(@RequestBody ApiAuthReqParam apiAuthReqParam
     ) throws AuthenticationException {
         SysUser user=apiAuthReqParam.getSysUser();
-        final String token = authService.login(user.getUsername(), user.getPassword());
-        return ResponseEntity.ok(new JwtAuthenticationResponse(token));
+        SysUser sysUser = authService.login(user.getUsername(), user.getPassword());
+        return ResponseEntity.ok(ApiBaseResponse.fromHttpStatus(HttpStatus.OK, sysUser));
+
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    /*@RequestMapping(value = "/login", method = RequestMethod.GET)
     public ResponseEntity<?> refreshAndGetAuthenticationToken(
         HttpServletRequest request) throws AuthenticationException {
         String token = request.getHeader(tokenHeader);
@@ -47,16 +46,11 @@ public class AuthController {
         } else {
             return ResponseEntity.ok(new JwtAuthenticationResponse(refreshedToken));
         }
-    }
-
+    }*/
     @ApiOperation("注册")
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public SysUser register(@RequestBody SysUser addedUser) throws AuthenticationException {
         return authService.register(addedUser);
     }
 
-    @RequestMapping(value = "/test", method = RequestMethod.POST)
-    public ResponseEntity<?> test() throws AuthenticationException {
-        return ResponseEntity.ok(userRepository.findOne(1L));
-    }
 }
