@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,10 +31,13 @@ public class Wfe extends AbstractTimestampEntity {
     @JoinColumn(name = "discovery_Id")
     private Discovery discovery;
 
-    @OneToMany(cascade = {CascadeType.ALL},mappedBy = "wfe")
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "wfe")
     @OrderBy("orderNo ASC")
-//    @JSONField(serialize = false)
+    //    @JSONField(serialize = false)
     private Set<Task> taskSet = new HashSet<>();
     //JUST_CREATED、RUNNING、COMPLETED
     private String state;
+
+    @Transient
+    private Task currentTask;
 }

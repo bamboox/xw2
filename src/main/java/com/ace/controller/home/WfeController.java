@@ -1,5 +1,7 @@
 package com.ace.controller.home;
 
+import com.ace.common.base.ApiBaseFileReqParam;
+import com.ace.common.base.ApiBaseReqParam;
 import com.ace.common.base.ApiBaseResponse;
 import com.ace.common.exception.DataFormatException;
 import com.ace.entity.Task;
@@ -30,8 +32,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
 import java.io.File;
 import java.net.URI;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -50,7 +55,9 @@ public class WfeController {
     private SysUserRepository sysUserRepository;
 
     @Autowired
-    public WfeController(TaskRepository taskRepository, WfeRepository wfeRepository, ResourceLoader resourceLoader, AsyncTaskService asyncTaskService, MsgService msgService, SysUserRepository sysUserRepository) {
+    public WfeController(TaskRepository taskRepository, WfeRepository wfeRepository, ResourceLoader resourceLoader,
+                         AsyncTaskService asyncTaskService, MsgService msgService,
+                         SysUserRepository sysUserRepository) {
         this.taskRepository = taskRepository;
         this.wfeRepository = wfeRepository;
         this.resourceLoader = resourceLoader;
@@ -60,90 +67,106 @@ public class WfeController {
     }
 
     @RequestMapping(value = "wait",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "Get a paginated list of all WfeTask.", notes = "The list is paginated. You can provide a page number (default 0) and a page size (default 20) more ?page=0&size=20&sort=b&sort=a,desc&sort=c,desc ")
+    @ApiOperation(value = "Get a paginated list of all WfeTask.",
+        notes = "The list is paginated. You can provide a page number (default 0) and a page size (default 20) more "
+            + "?page=0&size=20&sort=b&sort=a,desc&sort=c,desc ")
     @ResponseBody
     public Page<Wfe> getWaitWfe(@PageableDefault(value = 20, sort = {"gmtCreated"}, direction = Sort.Direction.DESC)
-                                        Pageable pageable) {
-        SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                                    Pageable pageable) {
+        SysUser sysUser = (SysUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userId = sysUser.getId();
         String departmentId = sysUser.getDepartment().getId();
 
-        Page<Wfe> wfes = wfeRepository.findDistinctByTaskSet_ToDepartmentIdAndTaskSet_ToUserIdIsNull(departmentId, pageable);
+        Page<Wfe> wfes = wfeRepository.findDistinctByTaskSet_ToDepartmentIdAndTaskSet_ToUserIdIsNull(departmentId,
+            pageable);
 
         return wfes;
     }
 
     @RequestMapping(value = "done",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "Get a paginated list of all WfeTask.", notes = "The list is paginated. You can provide a page number (default 0) and a page size (default 20) more ?page=0&size=20&sort=b&sort=a,desc&sort=c,desc ")
+    @ApiOperation(value = "Get a paginated list of all WfeTask.",
+        notes = "The list is paginated. You can provide a page number (default 0) and a page size (default 20) more "
+            + "?page=0&size=20&sort=b&sort=a,desc&sort=c,desc ")
     @ResponseBody
     public Page<Wfe> getDoneWfe(@PageableDefault(value = 20, sort = {"gmtCreated"}, direction = Sort.Direction.DESC)
-                                        Pageable pageable) {
-        SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                                    Pageable pageable) {
+        SysUser sysUser = (SysUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userId = sysUser.getId();
         String departmentId = sysUser.getDepartment().getId();
 
-        Page<Wfe> wfes = wfeRepository.findDistinctByTaskSet_ToDepartmentIdAndTaskSet_ToUserId(departmentId, userId, pageable);
+        Page<Wfe> wfes = wfeRepository.findDistinctByTaskSet_ToDepartmentIdAndTaskSet_ToUserId(departmentId, userId,
+            pageable);
         return wfes;
     }
 
     @RequestMapping(value = "create",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "Get a paginated list of all WfeTask.", notes = "The list is paginated. You can provide a page number (default 0) and a page size (default 20) more ?page=0&size=20&sort=b&sort=a,desc&sort=c,desc ")
+    @ApiOperation(value = "Get a paginated list of all WfeTask.",
+        notes = "The list is paginated. You can provide a page number (default 0) and a page size (default 20) more "
+            + "?page=0&size=20&sort=b&sort=a,desc&sort=c,desc ")
     @ResponseBody
     public Page<Wfe> getCreateWfe(@PageableDefault(value = 20, sort = {"gmtCreated"}, direction = Sort.Direction.DESC)
-                                          Pageable pageable) {
-        SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                                      Pageable pageable) {
+        SysUser sysUser = (SysUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userId = sysUser.getId();
         String departmentId = sysUser.getDepartment().getId();
 
-        Page<Wfe> wfes = wfeRepository.findDistinctByTaskSet_ToDepartmentIdAndTaskSet_ToUserIdAndTaskSet_NodeType(departmentId, userId, "START", pageable);
+        Page<Wfe> wfes = wfeRepository.findDistinctByTaskSet_ToDepartmentIdAndTaskSet_ToUserIdAndTaskSet_NodeType(
+            departmentId, userId, "START", pageable);
         return wfes;
     }
 
     @RequestMapping(value = "about",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "Get a paginated list of all WfeTask.", notes = "The list is paginated. You can provide a page number (default 0) and a page size (default 20) more ?page=0&size=20&sort=b&sort=a,desc&sort=c,desc ")
+    @ApiOperation(value = "Get a paginated list of all WfeTask.",
+        notes = "The list is paginated. You can provide a page number (default 0) and a page size (default 20) more "
+            + "?page=0&size=20&sort=b&sort=a,desc&sort=c,desc ")
     @ResponseBody
     public Page<Wfe> getAboutWfe(@PageableDefault(value = 20, sort = {"gmtCreated"}, direction = Sort.Direction.DESC)
-                                         Pageable pageable) {
-        SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                                     Pageable pageable) {
+        SysUser sysUser = (SysUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userId = sysUser.getId();
         String departmentId = sysUser.getDepartment().getId();
 
-        Page<Wfe> wfes = wfeRepository.findDistinctByTaskSet_ToDepartmentIdOrTaskSet_FromDepartmentId(departmentId, departmentId, pageable);
+        Page<Wfe> wfes = wfeRepository.findDistinctByTaskSet_ToDepartmentIdOrTaskSet_FromDepartmentId(departmentId,
+            departmentId, pageable);
         return wfes;
     }
 
     @RequestMapping(value = "operate",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+        method = RequestMethod.POST,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "operate :doing pass refuse", notes = "The list is paginated. You can provide a page number (default 0) and a page size (default 20) more ?page=0&size=20&sort=b&sort=a,desc&sort=c,desc ")
+    @ApiOperation(value = "operate :doing pass refuse",
+        notes = "The list is paginated. You can provide a page number (default 0) and a page size (default 20) more "
+            + "?page=0&size=20&sort=b&sort=a,desc&sort=c,desc ")
     @ResponseBody
-    public ResponseEntity<?> operateWfe(@RequestParam("file") MultipartFile files[],
-                                        @RequestParam("wfeId") String wfeId,
-                                        @RequestParam("taskId") String taskId,
-                                        @RequestParam("operate") String operate,
-                                        @RequestParam("message") String message,
+    public ResponseEntity<?> operateWfe(@Valid @RequestBody ApiBaseReqParam<ApiWfeReqParam> apiBaseReqParam,
                                         HttpServletRequest request) {
-        if (files.length > 6) {
+        ApiWfeReqParam bizParams = apiBaseReqParam.getBizParams();
+        String taskId = bizParams.getTaskId();
+        String wfeId = bizParams.getWfeId();
+        String operate = bizParams.getOperate();
+        String message = bizParams.getMessage();
+        List<ApiBaseFileReqParam> files = bizParams.getFiles();
+        if (files.size() > 6) {
             throw new DataFormatException("files length max 6");
         }
         //operate pass
         //operate refuse
         //operate recall
         //operate doing
-        SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        SysUser sysUser = (SysUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userId = sysUser.getId();
         Department department = sysUser.getDepartment();
         String departmentId = sysUser.getDepartment().getId();
@@ -160,7 +183,8 @@ public class WfeController {
             task.setState("WAIT");
             task.setMessage(message);
 
-            String keyPrefix = organizationId + "_" + departmentId + "_" + userId + "_" + String.valueOf(System.currentTimeMillis());
+            String keyPrefix = organizationId + "_" + departmentId + "_" + userId + "_" + String.valueOf(
+                System.currentTimeMillis());
 
             Set<Image> imageSet = asyncTaskService.save2Qiniu(files, keyPrefix, userId);
             asyncTaskService.uploadQiniu(keyPrefix, files);
@@ -173,7 +197,6 @@ public class WfeController {
             createTask.setFromDepartmentName(department.getName());
             createTask.setFromUserId(userId);
             createTask.setFromUserName(sysUser.getName());
-
 
             createTask.setToDepartmentId(task.getFromDepartmentId());
             createTask.setToDepartmentName(department.getName());
@@ -189,7 +212,8 @@ public class WfeController {
             wfeRepository.save(wfe);
 
             String context = fromUser.getName() + "发起反馈!";
-            msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()), task.getFromDepartmentId());
+            msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()),
+                task.getFromDepartmentId());
 
         } else if ("pass".equals(operate)) {
             task.setToUserId(userId);
@@ -215,7 +239,8 @@ public class WfeController {
             wfeRepository.save(wfe);
 
             String context = fromUser.getName() + "发起反馈!";
-            msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()), task.getFromDepartmentId());
+            msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()),
+                task.getFromDepartmentId());
 
         } else if ("refuse".equals(operate)) {
             task.setToUserId(userId);
@@ -264,12 +289,13 @@ public class WfeController {
             taskRepository.save(createTask);
         }*/
 
-        return ResponseEntity.created(URI.create(request.getRequestURI().concat(File.separator))).body(ApiBaseResponse.fromHttpStatus(HttpStatus.CREATED));
+        return ResponseEntity.created(URI.create(request.getRequestURI().concat(File.separator))).body(
+            ApiBaseResponse.fromHttpStatus(HttpStatus.CREATED));
     }
 
     @RequestMapping(value = "/{id}",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Get a single Wfe.", notes = "You have to provide a valid Wfe ID.")
     @ResponseBody
@@ -277,6 +303,19 @@ public class WfeController {
                       @PathVariable("id") String id
     ) throws Exception {
 
+        SysUser sysUser = (SysUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String userId = sysUser.getId();
+        Wfe wfe = wfeRepository.findOne(id);
+        wfe.getTaskSet().forEach(task -> {
+                if (task.getFromUserId().equals(userId)) {
+                    wfe.setCurrentTask(task);
+                }
+            }
+        );
+        if (wfe.getCurrentTask() == null) {
+            Task[] tasks = wfe.getTaskSet().toArray(new Task[wfe.getTaskSet().size()]);
+            wfe.setCurrentTask(tasks[tasks.length - 1]);
+        }
         return wfeRepository.findOne(id);
     }
 }

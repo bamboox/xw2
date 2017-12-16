@@ -1,7 +1,10 @@
 package com.ace.controller.home;
 
+import com.ace.common.base.ApiBaseFileReqParam;
+import com.ace.common.base.ApiBaseReqParam;
 import com.ace.common.base.ApiBaseResponse;
 import com.ace.common.exception.DataFormatException;
+import com.ace.controller.auth.ApiAuthReqParam;
 import com.ace.entity.Discovery;
 import com.ace.entity.Task;
 import com.ace.entity.Wfe;
@@ -33,13 +36,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
 import java.io.File;
 import java.net.URI;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -49,6 +56,7 @@ import java.util.Set;
 @RestController
 @RequestMapping("/api/discovery")
 @Log
+@Validated
 public class DiscoveryController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     @Value("${web.upload-path}")
@@ -63,7 +71,10 @@ public class DiscoveryController {
     private MsgService msgService;
 
     @Autowired
-    public DiscoveryController(ResourceLoader resourceLoader, DiscoveryRepository discoveryRepository, IProcessInstanceService iProcessInstanceService, TaskRepository taskRepository, WfeRepository wfeRepository, DepartmentRepository departmentRepository, AsyncTaskService asyncTaskService, MsgService msgService) {
+    public DiscoveryController(ResourceLoader resourceLoader, DiscoveryRepository discoveryRepository,
+                               IProcessInstanceService iProcessInstanceService, TaskRepository taskRepository,
+                               WfeRepository wfeRepository, DepartmentRepository departmentRepository,
+                               AsyncTaskService asyncTaskService, MsgService msgService) {
         this.resourceLoader = resourceLoader;
         this.discoveryRepository = discoveryRepository;
         this.iProcessInstanceService = iProcessInstanceService;
@@ -75,13 +86,15 @@ public class DiscoveryController {
 
     }
 
-    @RequestMapping(
+    /*@RequestMapping(
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "Create a Discovery resource.", notes = "Returns the URL of the new resource in the Location header.")
-    public ResponseEntity<?> createDiscovery(@RequestBody ApiDiscoveryReqParam apiDiscoveryReqParam, HttpServletRequest request) {
+    @ApiOperation(value = "Create a Discovery resource.", notes = "Returns the URL of the new resource in the
+    Location header.")
+    public ResponseEntity<?> createDiscovery(@RequestBody ApiDiscoveryReqParam apiDiscoveryReqParam,
+    HttpServletRequest request) {
         SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userId = sysUser.getId();
         String departmentId = sysUser.getDepartment().getId();
@@ -93,64 +106,61 @@ public class DiscoveryController {
 
         discoveryRepository.save(discovery);
 
-        return ResponseEntity.created(URI.create(request.getRequestURI().concat(File.separator).concat(discovery.getId()).toString())).body(ApiBaseResponse.fromHttpStatus(HttpStatus.CREATED, discovery, apiDiscoveryReqParam.getRequestId()));
+        return ResponseEntity.created(URI.create(request.getRequestURI().concat(File.separator).concat(discovery
+        .getId()).toString())).body(ApiBaseResponse.fromHttpStatus(HttpStatus.CREATED, discovery,
+        apiDiscoveryReqParam.getRequestId()));
 
-    }
-
+    }*/
 
     @RequestMapping(value = "submit",
-            method = RequestMethod.POST,
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+        method = RequestMethod.POST,
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "Create a Discovery resource.", notes = "Returns the URL of the new resource in the Location header.")
-    public ResponseEntity<?> submit(@RequestParam(value = "file", required = true)MultipartFile files[],
-                                    @RequestParam Double latitude,
-                                    @RequestParam Double longitude,
-                                    @RequestParam String location,
-                                    @RequestParam String description,
-                                    @RequestParam(required = true) String sendDepartmentId,
+    @ApiOperation(value = "Create a Discovery resource.",
+        notes = "Returns the URL of the new resource in the Location header.")
+    public ResponseEntity<?> submit(@Valid @ApiParam @RequestBody ApiBaseReqParam<ApiDiscoveryReqParam> apiBaseReqParam,
                                     HttpServletRequest request) {
-        logger.debug("files:" + files.length);
 
-        if(files.length>6){
+        ApiDiscoveryReqParam bizParams = apiBaseReqParam.getBizParams();
+        List<ApiBaseFileReqParam> files = bizParams.getFiles();
+
+        logger.debug("files:" + files.size());
+
+        if (files.size() > 6) {
             throw new DataFormatException("files length max 6");
         }
 
-
-        SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        SysUser sysUser = (SysUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userId = sysUser.getId();
         Department department = sysUser.getDepartment();
         String departmentId = sysUser.getDepartment().getId();
         String organizationId = department.getOrganization().getId();
 
-
         Discovery discovery = new Discovery();
-        discovery.setLatitude(latitude);
-        discovery.setLongitude(longitude);
-        discovery.setLocation(location);
-        discovery.setDescription(description);
+        discovery.setLatitude(bizParams.getLatitude());
+        discovery.setLongitude(bizParams.getLongitude());
+        discovery.setLocation(bizParams.getLocation());
+        discovery.setDescription(bizParams.getDescription());
         discovery.setUserId(userId);
         discovery.setDepartmentId(departmentId);
 
         //
 
-        String keyPrefix = organizationId + "_" + departmentId + "_" + userId + "_" + String.valueOf(System.currentTimeMillis());
+        String keyPrefix = organizationId + "_" + departmentId + "_" + userId + "_" + String.valueOf(
+            System.currentTimeMillis());
         Set<Image> imageSet = asyncTaskService.save2Qiniu(files, keyPrefix, userId);
         asyncTaskService.uploadQiniu(keyPrefix, files);
         discovery.setImageSet(imageSet);
         discovery.setState("RUNNING");
         discoveryRepository.save(discovery);
 
-
         Wfe wfe = new Wfe();
         wfe.setDiscovery(discovery);
         wfe.setCreateUserId(userId);
         wfe.setCreateDepartmentId(departmentId);
-        wfe.setToDepartmentId(sendDepartmentId);
+        wfe.setToDepartmentId(bizParams.getSendDepartmentId());
         wfe.setState("JUST_CREATED");
-
-
 
         Task createTask = new Task();
         createTask.setFromDepartmentId(departmentId);
@@ -175,8 +185,8 @@ public class DiscoveryController {
         task.setFromUserId(userId);
         task.setFromUserName(sysUser.getName());
 
-        task.setToDepartmentId(sendDepartmentId);
-        task.setToDepartmentName(departmentRepository.findOne(sendDepartmentId).getName());
+        task.setToDepartmentId(bizParams.getSendDepartmentId());
+        task.setToDepartmentName(departmentRepository.findOne(bizParams.getSendDepartmentId()).getName());
 
         task.setNodeType("TASK_NODE");
         task.setState("UNSTATE");
@@ -192,23 +202,26 @@ public class DiscoveryController {
         wfe.setTaskSet(taskSet);
         wfeRepository.save(wfe);
 
-        String context=department.getName()+"部门发起反馈!";
-        msgService.sendMsgByTag(context,"您有新任务来了!",ImmutableMap.of("id",wfe.getId()),sendDepartmentId);
+        String context = department.getName() + "部门发起反馈!";
+        msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()),
+            bizParams.getSendDepartmentId());
 
-        /*iProcessInstanceService.createProcessInstance(discovery.getId(), userId);*/
+        iProcessInstanceService.createProcessInstance(discovery.getId(), userId);
 
-        return ResponseEntity.created(URI.create(request.getRequestURI().concat(File.separator).concat(discovery.getId()).toString())).body(ApiBaseResponse.fromHttpStatus(HttpStatus.CREATED, discovery));
-
+        return ResponseEntity.created(URI.create(request.getRequestURI().concat(File.separator)
+            .concat(discovery.getId()).toString())).body(ApiBaseResponse.fromHttpStatus(HttpStatus.CREATED, discovery));
     }
 
 
-    @RequestMapping(
+    /*@RequestMapping(
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "Get a paginated list of all Discovery.", notes = "The list is paginated. You can provide a page number (default 0) and a page size (default 20) more ?page=0&size=20&sort=b&sort=a,desc&sort=c,desc ")
+    @ApiOperation(value = "Get a paginated list of all Discovery.", notes = "The list is paginated. You can provide a
+     page number (default 0) and a page size (default 20) more ?page=0&size=20&sort=b&sort=a,desc&sort=c,desc ")
     @ResponseBody
-    public Page<Discovery> getDiscoveryAll(@PageableDefault(value = 20, sort = {"gmtCreated"}, direction = Sort.Direction.DESC)
+    public Page<Discovery> getDiscoveryAll(@PageableDefault(value = 20, sort = {"gmtCreated"}, direction = Sort
+    .Direction.DESC)
                                                    Pageable pageable) {
         SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userId = sysUser.getId();
@@ -234,7 +247,8 @@ public class DiscoveryController {
             method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiOperation(value = "Update a SysUser resource.", notes = "You have to provide a valid Discovery ID in the URL and in the payload. The ID attribute can not be updated.")
+    @ApiOperation(value = "Update a SysUser resource.", notes = "You have to provide a valid Discovery ID in the URL
+    and in the payload. The ID attribute can not be updated.")
     public void updateDiscovery(@ApiParam(value = "The ID of the existing Discovery resource.", required = true)
                                 @PathVariable("id") String id, @RequestBody ApiDiscoveryReqParam apiDiscoveryReqParam) {
         Discovery discovery = apiDiscoveryReqParam.getDiscovery();
@@ -246,10 +260,11 @@ public class DiscoveryController {
             method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiOperation(value = "Delete a Discovery resource.", notes = "You have to provide a valid Discovery ID in the URL. Once deleted the resource can not be recovered.")
+    @ApiOperation(value = "Delete a Discovery resource.", notes = "You have to provide a valid Discovery ID in the
+    URL. Once deleted the resource can not be recovered.")
     public void deleteDiscovery(@ApiParam(value = "The ID of the existing SysUser resource.", required = true)
                                 @PathVariable("id") String id) {
 
         this.discoveryRepository.delete(id);
-    }
+    }*/
 }
