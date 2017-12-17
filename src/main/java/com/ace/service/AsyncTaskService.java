@@ -5,7 +5,7 @@ import com.ace.entity.file.Image;
 import com.ace.util.ImageBaser64;
 import com.ace.util.QiNiu;
 import com.google.common.base.Strings;
-import com.google.common.io.ByteStreams;
+import com.google.common.collect.Sets;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -57,7 +57,7 @@ public class AsyncTaskService {
     }
 
     public Set<Image> save2Qiniu(List<ApiBaseFileReqParam> files, String keyPrefix, String userId) {
-        Set<Image> imageSet = new HashSet<>();
+        Set<Image> imageSet = Sets.newHashSet();
         for (int i = 0; i < files.size(); i++) {
             ApiBaseFileReqParam file = files.get(i);
             if (!Strings.isNullOrEmpty(file.getBase64())) {

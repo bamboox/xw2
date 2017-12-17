@@ -7,7 +7,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,7 +26,7 @@ public class Wfe extends AbstractTimestampEntity {
     private String createDepartmentId;
 
     private String toDepartmentId;
-    @OneToOne
+    @OneToOne(cascade=CascadeType.ALL)
     @JoinColumn(name = "discovery_Id")
     private Discovery discovery;
 

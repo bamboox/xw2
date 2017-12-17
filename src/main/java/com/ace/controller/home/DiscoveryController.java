@@ -4,7 +4,6 @@ import com.ace.common.base.ApiBaseFileReqParam;
 import com.ace.common.base.ApiBaseReqParam;
 import com.ace.common.base.ApiBaseResponse;
 import com.ace.common.exception.DataFormatException;
-import com.ace.controller.auth.ApiAuthReqParam;
 import com.ace.entity.Discovery;
 import com.ace.entity.Task;
 import com.ace.entity.Wfe;
@@ -28,21 +27,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-
 import java.io.File;
 import java.net.URI;
 import java.util.HashSet;
@@ -114,7 +107,7 @@ public class DiscoveryController {
 
     @RequestMapping(value = "submit",
         method = RequestMethod.POST,
-        consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "Create a Discovery resource.",
@@ -153,7 +146,7 @@ public class DiscoveryController {
         asyncTaskService.uploadQiniu(keyPrefix, files);
         discovery.setImageSet(imageSet);
         discovery.setState("RUNNING");
-        discoveryRepository.save(discovery);
+//        discoveryRepository.save(discovery);
 
         Wfe wfe = new Wfe();
         wfe.setDiscovery(discovery);
@@ -205,8 +198,6 @@ public class DiscoveryController {
         String context = department.getName() + "部门发起反馈!";
         msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()),
             bizParams.getSendDepartmentId());
-
-        iProcessInstanceService.createProcessInstance(discovery.getId(), userId);
 
         return ResponseEntity.created(URI.create(request.getRequestURI().concat(File.separator)
             .concat(discovery.getId()).toString())).body(ApiBaseResponse.fromHttpStatus(HttpStatus.CREATED, discovery));

@@ -29,11 +29,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-
 import java.io.File;
 import java.net.URI;
 import java.util.List;
@@ -82,7 +80,9 @@ public class WfeController {
 
         Page<Wfe> wfes = wfeRepository.findDistinctByTaskSet_ToDepartmentIdAndTaskSet_ToUserIdIsNull(departmentId,
             pageable);
-
+        wfes.getContent().forEach(wfe -> {
+            process(wfe,userId);
+        });
         return wfes;
     }
 
@@ -121,6 +121,9 @@ public class WfeController {
 
         Page<Wfe> wfes = wfeRepository.findDistinctByTaskSet_ToDepartmentIdAndTaskSet_ToUserIdAndTaskSet_NodeType(
             departmentId, userId, "START", pageable);
+        wfes.getContent().forEach(wfe -> {
+            process(wfe,userId);
+        });
         return wfes;
     }
 
@@ -306,16 +309,21 @@ public class WfeController {
         SysUser sysUser = (SysUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userId = sysUser.getId();
         Wfe wfe = wfeRepository.findOne(id);
+
+        return process(wfe,userId);
+    }
+
+    private Wfe process(Wfe wfe,String userId){
         wfe.getTaskSet().forEach(task -> {
-                if (task.getFromUserId().equals(userId)) {
-                    wfe.setCurrentTask(task);
+                    if (task.getFromUserId().equals(userId)) {
+                        wfe.setCurrentTask(task);
+                    }
                 }
-            }
         );
         if (wfe.getCurrentTask() == null) {
             Task[] tasks = wfe.getTaskSet().toArray(new Task[wfe.getTaskSet().size()]);
             wfe.setCurrentTask(tasks[tasks.length - 1]);
         }
-        return wfeRepository.findOne(id);
+        return wfe;
     }
 }
