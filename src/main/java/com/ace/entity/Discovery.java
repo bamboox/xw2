@@ -36,8 +36,6 @@ public class Discovery extends AbstractTimestampEntity {
     private String userId;
     private String departmentId;
 
-    //JUST_CREATED RUNNING COMPLETED
-    private String state;
     @OneToOne(mappedBy = "discovery")
     @JSONField(serialize = false)
     private Wfe wfe;
