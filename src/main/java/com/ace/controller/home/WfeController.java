@@ -207,7 +207,7 @@ public class WfeController {
             createTask.setFromUserName(sysUser.getName());
 
             createTask.setToDepartmentId(task.getFromDepartmentId());
-            createTask.setToDepartmentName(task.getFromDepartmentId());
+            createTask.setToDepartmentName(task.getFromDepartmentName());
 
             createTask.setNodeType("TASK_NODE");
             createTask.setOrderNo(task.getOrderNo() + 1);
@@ -230,7 +230,7 @@ public class WfeController {
             task.setMessage(message);
             taskRepository.save(task);
 
-            Task createTask = new Task();
+            /*Task createTask = new Task();
             createTask.setFromDepartmentId(department.getId());
             createTask.setFromDepartmentName(department.getName());
             createTask.setFromUserId(userId);
@@ -241,7 +241,7 @@ public class WfeController {
             createTask.setState("COMPLETED");
             createTask.setWfe(wfe);
 
-            taskRepository.save(createTask);
+            taskRepository.save(createTask);*/
 
             wfe.setState("COMPLETED");
             wfeRepository.save(wfe);
@@ -292,6 +292,8 @@ public class WfeController {
 
             wfe.setState("RECALL");
             wfeRepository.save(wfe);
+        } else {
+            throw new DataFormatException("operate not exits");
         }
 
         return ResponseEntity.created(URI.create(request.getRequestURI().concat(File.separator))).body(

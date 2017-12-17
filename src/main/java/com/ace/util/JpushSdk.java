@@ -5,7 +5,6 @@ import cn.jiguang.common.resp.APIConnectionException;
 import cn.jiguang.common.resp.APIRequestException;
 import cn.jpush.api.JPushClient;
 import cn.jpush.api.push.PushResult;
-import cn.jpush.api.push.model.Message;
 import cn.jpush.api.push.model.Options;
 import cn.jpush.api.push.model.Platform;
 import cn.jpush.api.push.model.PushPayload;
@@ -13,7 +12,6 @@ import cn.jpush.api.push.model.audience.Audience;
 import cn.jpush.api.push.model.audience.AudienceTarget;
 import cn.jpush.api.push.model.notification.AndroidNotification;
 import cn.jpush.api.push.model.notification.Notification;
-import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,13 +65,13 @@ public class JpushSdk {
 
     public static PushPayload buildPushObject_all_all_alert_alias(String context, String title, Map<String, String> extra, String... alias) {
 
-        Message.Builder builder = Message.newBuilder()
+        /*Message.Builder builder = Message.newBuilder()
                 .setMsgContent(context)
                 .setTitle(title);
 
         extra.forEach((k, v) -> {
             builder.addExtra(k, v);
-        });
+        });*/
 
         return PushPayload.newBuilder()
                 .setPlatform(Platform.android())
@@ -90,19 +88,19 @@ public class JpushSdk {
                                 .build())
                         .build())
                 .setOptions(Options.newBuilder()
-                        .setApnsProduction(false)
+                        .setApnsProduction(true)
                         .build())
                 .build();
     }
 
     public static PushPayload buildPushObject_all_all_alert_tag(String context, String title, Map<String, String> extra, String... tag) {
-        Message.Builder builder = Message.newBuilder()
+        /*Message.Builder builder = Message.newBuilder()
                 .setMsgContent(context)
                 .setTitle(title);
 
         extra.forEach((k, v) -> {
             builder.addExtra(k, v);
-        });
+        });*/
 
         return PushPayload.newBuilder()
                 .setPlatform(Platform.android())
@@ -115,17 +113,17 @@ public class JpushSdk {
                                 .setAlert(context)
                                 .setTitle(title)
                                 .addExtras(extra)
-                                .setBuilderId(666)
+//                                .setBuilderId(Bi)
                                 .build())
                         .build())
                 .setOptions(Options.newBuilder()
-                        .setApnsProduction(false)
+                        .setApnsProduction(true)
                         .build())
                 .build();
     }
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
 //        sendMsgByAlias("666", "777", ImmutableMap.of("id", "1"), "ff808181601707450160170901610000");
-        sendMsgByTag("文明办部门发起反馈!", "您有新任务来了!", ImmutableMap.of("id", "1"), "2");
-    }
+        sendMsgByTag("dsa!", "dsa了!", ImmutableMap.of("id", "dsadsa"), "1");
+    }*/
 }
