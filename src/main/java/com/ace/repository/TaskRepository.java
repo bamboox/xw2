@@ -13,4 +13,6 @@ public interface TaskRepository extends ReadOnlyPagingAndSortingRepository<Task,
     Page<Task> findAllByToDepartmentIdAndToUserIdIsNull(String departmentId, Pageable pageable);
     Page<Task> findAllByToDepartmentIdAndToUserId(String departmentId, String userId, Pageable pageable);
 
+    Task findByWfe_IdAndOrderNo(String wfeId, int orderNo);
+
 }

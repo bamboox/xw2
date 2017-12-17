@@ -14,6 +14,7 @@ import com.ace.repository.TaskRepository;
 import com.ace.repository.WfeRepository;
 import com.ace.service.AsyncTaskService;
 import com.ace.service.MsgService;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -122,7 +123,7 @@ public class WfeController {
         Page<Wfe> wfes = wfeRepository.findDistinctByTaskSet_ToDepartmentIdAndTaskSet_ToUserIdAndTaskSet_NodeType(
             departmentId, userId, "START", pageable);
         wfes.getContent().forEach(wfe -> {
-            process(wfe,userId);
+            processCreate(wfe,userId);
         });
         return wfes;
     }
@@ -141,7 +142,7 @@ public class WfeController {
         String userId = sysUser.getId();
         String departmentId = sysUser.getDepartment().getId();
 
-        Page<Wfe> wfes = wfeRepository.findDistinctByTaskSet_ToDepartmentIdOrTaskSet_FromDepartmentId(departmentId,
+        Page<Wfe> wfes = wfeRepository.findDistinctByStateNotAndTaskSet_ToDepartmentIdOrTaskSet_FromDepartmentId("recall",departmentId,
             departmentId, pageable);
         return wfes;
     }
@@ -272,25 +273,22 @@ public class WfeController {
             String context = fromUser.getName() + "发起反馈!";
             msgService.sendMsgByAlias(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()), task.getFromUserId());
 
-        }/*else if ("recall".equals(operate)) {
-            task.setToUserId(userId);
-            task.setToUserName(sysUser.getName());
-            task.setState("COMPLETED");
+        }else if ("reminder".equals(operate)) {
+            String context = fromUser.getName() + "发来提醒!";
+            msgService.sendMsgByAlias(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()), task.getFromUserId());
+        }else if ("recall".equals(operate)) {
+
+
+            /*task.setToUserId(userId);
+            task.setToUserName(sysUser.getName());*/
+            task.setState("recall");
             task.setMessage(message);
             taskRepository.save(task);
 
-            Task createTask = new Task();
-            createTask.setFromDepartmentId(department.getId());
-            createTask.setFromDepartmentName(department.getName());
-            createTask.setFromUserId(userId);
-            createTask.setFromUserName(sysUser.getName());
 
-            createTask.setNodeType("END");
-            createTask.setState("COMPLETED");
-            createTask.setWfe(wfe);
-
-            taskRepository.save(createTask);
-        }*/
+            wfe.setState("RECALL");
+            wfeRepository.save(wfe);
+        }
 
         return ResponseEntity.created(URI.create(request.getRequestURI().concat(File.separator))).body(
             ApiBaseResponse.fromHttpStatus(HttpStatus.CREATED));
@@ -314,7 +312,7 @@ public class WfeController {
     }
 
     private Wfe process(Wfe wfe,String userId){
-        wfe.getTaskSet().forEach(task -> {
+        /*wfe.getTaskSet().forEach(task -> {
                     if (task.getFromUserId().equals(userId)) {
                         wfe.setCurrentTask(task);
                     }
@@ -323,6 +321,27 @@ public class WfeController {
         if (wfe.getCurrentTask() == null) {
             Task[] tasks = wfe.getTaskSet().toArray(new Task[wfe.getTaskSet().size()]);
             wfe.setCurrentTask(tasks[tasks.length - 1]);
+        }*/
+        Task[] tasks = wfe.getTaskSet().toArray(new Task[wfe.getTaskSet().size()]);
+        Task lastTask =tasks[tasks.length - 1];
+        wfe.setCurrentTask(lastTask);
+        return wfe;
+    }
+    private Wfe processCreate(Wfe wfe,String userId){
+        /*wfe.getTaskSet().forEach(task -> {
+                    if (task.getFromUserId().equals(userId)) {
+                        wfe.setCurrentTask(task);
+                    }
+                }
+        );*/
+        Task[] tasks = wfe.getTaskSet().toArray(new Task[wfe.getTaskSet().size()]);
+        Task lastTask =tasks[tasks.length - 1];
+        Task task = taskRepository.findByWfe_IdAndOrderNo(wfe.getId(), 1);
+        if (Strings.isNullOrEmpty(task.getToUserId())) {
+            wfe.setCurrentTask(lastTask);
+        }else{
+            lastTask.setNextOperate("reminder");
+            wfe.setCurrentTask(lastTask);
         }
         return wfe;
     }
