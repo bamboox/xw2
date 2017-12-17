@@ -145,7 +145,6 @@ public class DiscoveryController {
         Set<Image> imageSet = asyncTaskService.save2Qiniu(files, keyPrefix, userId);
         asyncTaskService.uploadQiniu(keyPrefix, files);
         discovery.setImageSet(imageSet);
-        discovery.setState("RUNNING");
 //        discoveryRepository.save(discovery);
 
         Wfe wfe = new Wfe();
