@@ -348,6 +348,7 @@ public class WfeController {
             lastTask.setNextOperate("recall");
             wfe.setCurrentTask(lastTask);
         } else if (tasks.length > 2) {
+            lastTask.setNextOperate("");
             wfe.setCurrentTask(lastTask);
         } else {
             lastTask.setNextOperate("reminder");
