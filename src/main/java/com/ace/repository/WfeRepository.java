@@ -19,4 +19,6 @@ public interface WfeRepository extends ReadOnlyPagingAndSortingRepository<Wfe, S
     List<Wfe> findDistinctById(String id);
     Page<Wfe>  findDistinctByStateNotAndTaskSet_ToDepartmentIdOrTaskSet_FromDepartmentId(String state,String toDepartmentId, String fromDepartmentId, Pageable pageable);
     Page<Wfe> findDistinctByTaskSet_ToDepartmentIdAndTaskSet_ToUserId(String departmentId, String userId, Pageable pageable);
+
+    Page<Wfe> findDistinctByCreateUserId(String userId, Pageable pageable);
 }
