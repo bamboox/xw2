@@ -4,7 +4,6 @@ import com.ace.common.base.ApiBaseFileReqParam;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -12,9 +11,7 @@ import java.util.List;
  */
 @Data
 public class ApiDiscoveryReqParam {
-    @NotNull
     private double latitude;
-    @NotNull
     private double longitude;
     @NotBlank
     private String location;
