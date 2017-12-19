@@ -2,6 +2,7 @@ package com.ace.controller.home;
 
 import com.ace.common.base.ApiBaseFileReqParam;
 import lombok.Data;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -15,11 +16,11 @@ public class ApiDiscoveryReqParam {
     private double latitude;
     @NotNull
     private double longitude;
-    @NotNull
+    @NotBlank
     private String location;
-    @NotNull
+    @NotBlank
     private String description;
-    @NotNull
+    @NotBlank
     private String sendDepartmentId;
     private List<ApiBaseFileReqParam> files;
 

@@ -1,14 +1,12 @@
 package com.ace.common.base;
 
-import java.util.HashMap;
-import java.util.UUID;
-
 import com.alibaba.fastjson.annotation.JSONField;
-
-import com.ace.entity.Discovery;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.util.StringUtils;
+
+import javax.validation.Valid;
+import java.util.UUID;
 
 /**
  * @author bamboo
@@ -23,8 +21,8 @@ public class ApiBaseReqParam<T> {
         }
         return this.requestId;
     }
-
     @JSONField(name = "bizParams")
     @ApiModelProperty(value = "bizParams")
+    @Valid
     private T bizParams;
 }
