@@ -79,7 +79,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ApiBaseResponse handleDataStoreException(DataFormatException ex, WebRequest request, HttpServletResponse response) {
         LOGGER.info("Converting Data Store exception to RestResponse : " + ex.getMessage());
-        return ApiBaseResponse.fromHttpStatus(HttpStatus.BAD_REQUEST,ex.getMessage());
+        return ApiBaseResponse.fromHttpStatus(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
     /*
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -94,9 +94,9 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiBaseResponse handle(MethodArgumentNotValidException exception) {
-        return ApiBaseResponse.fromHttpStatus(HttpStatus.BAD_REQUEST,exception.getBindingResult().getFieldErrors()
+        return ApiBaseResponse.fromHttpStatus(HttpStatus.BAD_REQUEST, exception.getBindingResult().getFieldErrors()
                 .stream()
-                .map(t->t.getField()+"-"+t.getDefaultMessage())
+                .map(t -> t.getField() + "-" + t.getDefaultMessage())
                 .collect(Collectors.toList()));
     }
 
@@ -104,7 +104,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiBaseResponse handle(ConstraintViolationException exception) {
-        return ApiBaseResponse.fromHttpStatus(HttpStatus.BAD_REQUEST,exception.getConstraintViolations()
+        return ApiBaseResponse.fromHttpStatus(HttpStatus.BAD_REQUEST, exception.getConstraintViolations()
                 .stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.toList()));

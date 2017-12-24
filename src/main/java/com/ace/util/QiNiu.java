@@ -44,6 +44,7 @@ public class QiNiu {//设置好账号的ACCESS_KEY和SECRET_KEY
 
         }
     }
+
     public void upload(File file) throws IOException {
         try {
             //调用put方法上传
@@ -53,7 +54,8 @@ public class QiNiu {//设置好账号的ACCESS_KEY和SECRET_KEY
 
         }
     }
-    public void upload(byte[] data,String key) throws IOException {
+
+    public void upload(byte[] data, String key) throws IOException {
         try {
             //调用put方法上传
             Response res = uploadManager.put(data, key, getUpToken());

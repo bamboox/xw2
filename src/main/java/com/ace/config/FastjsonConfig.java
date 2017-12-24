@@ -18,8 +18,8 @@ public class FastjsonConfig {
     public HttpMessageConverters fastJsonHttpMessageConverters() {
         FastJsonHttpMessageConverter fastConvert = new FastJsonHttpMessageConverter();
         FastJsonConfig fastJsonConfig = new FastJsonConfig();
-        fastJsonConfig.setSerializerFeatures(SerializerFeature.PrettyFormat,SerializerFeature.DisableCircularReferenceDetect,SerializerFeature.WriteNullStringAsEmpty);
+        fastJsonConfig.setSerializerFeatures(SerializerFeature.PrettyFormat, SerializerFeature.DisableCircularReferenceDetect, SerializerFeature.WriteNullStringAsEmpty);
         fastConvert.setFastJsonConfig(fastJsonConfig);
-        return new HttpMessageConverters((HttpMessageConverter<?>)fastConvert);
+        return new HttpMessageConverters((HttpMessageConverter<?>) fastConvert);
     }
 }

@@ -16,6 +16,7 @@ public class CustomUserService implements UserDetailsService {
     SysUserRepository userRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
+
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         SysUser user = userRepository.findByUsername(s);

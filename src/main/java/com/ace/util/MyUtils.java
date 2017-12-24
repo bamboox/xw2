@@ -1,5 +1,7 @@
 package com.ace.util;
+
 import java.security.MessageDigest;
+
 public class MyUtils {
     public static String getMD5(String inStr) {
         MessageDigest md5 = null;

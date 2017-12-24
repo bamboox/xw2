@@ -15,7 +15,7 @@ import java.util.Set;
 @Entity
 @Data
 @Table(name = "department")
-@EqualsAndHashCode(exclude="sysUsers")
+@EqualsAndHashCode(exclude = "sysUsers")
 public class Department extends AbstractTimestampEntity {
 
     private String name;

@@ -10,10 +10,12 @@ public enum ResultStatusCode {
     INVALID_TOKEN(30006, "Invalid token");
     private int code;
     private String msg;
-    private ResultStatusCode(int code,String msg){
-        this.code=code;
-        this.msg=msg;
+
+    private ResultStatusCode(int code, String msg) {
+        this.code = code;
+        this.msg = msg;
     }
+
     public int getCode() {
         return code;
     }

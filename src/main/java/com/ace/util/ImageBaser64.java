@@ -1,21 +1,17 @@
 package com.ace.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Base64;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.util.Base64;
 
 /**
  * size: file.size,
  * type: file.type,
  * name: file.name,
  * base64: base64
- *
+ * <p>
  * data:image/jpeg;base64,xxxx
  *
  * @author bamboo
@@ -28,7 +24,7 @@ public class ImageBaser64 {
         File file = new File(imagePath);
         try (FileInputStream imageInFile = new FileInputStream(file)) {
             // Reading a Image file from file system
-            byte imageData[] = new byte[(int)file.length()];
+            byte imageData[] = new byte[(int) file.length()];
             imageInFile.read(imageData);
             base64Image = Base64.getEncoder().encodeToString(imageData);
         } catch (FileNotFoundException e) {

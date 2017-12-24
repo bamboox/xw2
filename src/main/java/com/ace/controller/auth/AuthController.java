@@ -30,7 +30,7 @@ public class AuthController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody ApiAuthReqParam apiAuthReqParam
     ) throws AuthenticationException {
-        SysUser user=apiAuthReqParam.getSysUser();
+        SysUser user = apiAuthReqParam.getSysUser();
         SysUser sysUser = authService.login(user.getUsername(), user.getPassword());
         return ResponseEntity.ok(ApiBaseResponse.fromHttpStatus(HttpStatus.OK, sysUser));
 

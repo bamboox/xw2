@@ -26,7 +26,7 @@ public class Wfe extends AbstractTimestampEntity {
     private String createDepartmentId;
 
     private String toDepartmentId;
-    @OneToOne(cascade=CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "discovery_Id")
     private Discovery discovery;
 

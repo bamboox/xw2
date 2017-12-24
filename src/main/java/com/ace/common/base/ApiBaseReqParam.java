@@ -21,6 +21,7 @@ public class ApiBaseReqParam<T> {
         }
         return this.requestId;
     }
+
     @JSONField(name = "bizParams")
     @ApiModelProperty(value = "bizParams")
     @Valid

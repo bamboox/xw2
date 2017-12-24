@@ -31,12 +31,12 @@ public class DepartmentController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Get a paginated list of all Department.", notes = "The list is paginated. You can provide a page number (default 0) and a page size (default 20) more ?page=0&size=20&sort=b&sort=a,desc&sort=c,desc ")
     @ResponseBody
-    public Page<Department> getDiscoveryAll(@PageableDefault(value = 20, sort = { "gmtCreated" }, direction = Sort.Direction.DESC)
-                                                   Pageable pageable,@RequestParam(value = "name",defaultValue = "")String name) {
+    public Page<Department> getDiscoveryAll(@PageableDefault(value = 20, sort = {"gmtCreated"}, direction = Sort.Direction.DESC)
+                                                    Pageable pageable, @RequestParam(value = "name", defaultValue = "") String name) {
         SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String oId = sysUser.getDepartment().getOrganization().getId();
         String id = sysUser.getDepartment().getId();
 
-        return departmentRepository.findAllByOrganization_IdAndNameContainingAndIdNot(oId,name,id,pageable);
+        return departmentRepository.findAllByOrganization_IdAndNameContainingAndIdNot(oId, name, id, pageable);
     }
 }

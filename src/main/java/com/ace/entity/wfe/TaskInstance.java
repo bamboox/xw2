@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @Entity
 @EqualsAndHashCode(exclude = {"tasks", "transfers"})
 @Table(name = "wfe_task_instance")
-public class TaskInstance extends AbstractTimestampEntity{
+public class TaskInstance extends AbstractTimestampEntity {
     //任务定义编号
     private String taskId;
     //对应的流程实例编号

@@ -32,7 +32,7 @@ public class ApiBaseResponse {
     @ApiModelProperty(required = true, notes = "JSON key: Data")
     Object data;
 
-    public static ApiBaseResponse fromHttpStatus(HttpStatus httpStatus,Object data,String requestId) {
+    public static ApiBaseResponse fromHttpStatus(HttpStatus httpStatus, Object data, String requestId) {
         return new ApiBaseResponse(
                 httpStatus.toString(),
                 httpStatus.getReasonPhrase(),
@@ -58,6 +58,7 @@ public class ApiBaseResponse {
                 data
         );
     }
+
     public static ApiBaseResponse fromHttpStatus(HttpStatus httpStatus) {
         return new ApiBaseResponse(
                 httpStatus.toString(),
@@ -66,6 +67,7 @@ public class ApiBaseResponse {
                 ""
         );
     }
+
     public static ResponseEntity toResponseEntity(HttpStatus httpStatus, String requestId) {
         return new ResponseEntity(ApiBaseResponse.fromHttpStatus(httpStatus, requestId), httpStatus);
     }

@@ -103,12 +103,12 @@ public class DiscoveryController {
     }*/
 
     @RequestMapping(value = "submit",
-        method = RequestMethod.POST,
-        consumes = MediaType.APPLICATION_JSON_VALUE,
-        produces = MediaType.APPLICATION_JSON_VALUE)
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "Create a Discovery resource.",
-        notes = "Returns the URL of the new resource in the Location header.")
+            notes = "Returns the URL of the new resource in the Location header.")
     public ResponseEntity<?> submit(@RequestBody @Valid ApiBaseReqParam<ApiDiscoveryReqParam> apiBaseReqParam,
                                     HttpServletRequest request) {
 
@@ -121,7 +121,7 @@ public class DiscoveryController {
             throw new DataFormatException("files length max 6");
         }
 
-        SysUser sysUser = (SysUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userId = sysUser.getId();
         Department department = sysUser.getDepartment();
         String departmentId = sysUser.getDepartment().getId();
@@ -138,7 +138,7 @@ public class DiscoveryController {
         //
 
         String keyPrefix = organizationId + "_" + departmentId + "_" + userId + "_" + String.valueOf(
-            System.currentTimeMillis());
+                System.currentTimeMillis());
         Set<Image> imageSet = asyncTaskService.save2Qiniu(files, keyPrefix, userId);
         asyncTaskService.uploadQiniu(keyPrefix, files);
         discovery.setImageSet(imageSet);
@@ -193,10 +193,10 @@ public class DiscoveryController {
 
         String context = department.getName() + "部门发起反馈!";
         msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()),
-            bizParams.getSendDepartmentId());
+                bizParams.getSendDepartmentId());
 
         return ResponseEntity.created(URI.create(request.getRequestURI().concat(File.separator)
-            .concat(discovery.getId()).toString())).body(ApiBaseResponse.fromHttpStatus(HttpStatus.CREATED, discovery));
+                .concat(discovery.getId()).toString())).body(ApiBaseResponse.fromHttpStatus(HttpStatus.CREATED, discovery));
     }
 
 

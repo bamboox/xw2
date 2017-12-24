@@ -16,10 +16,10 @@ import java.util.Set;
  */
 @Entity
 @Data
-@EqualsAndHashCode(exclude="departments")
+@EqualsAndHashCode(exclude = "departments")
 @Table(name = "organization")
 public class Organization extends AbstractTimestampEntity {
     private String name;
-    @OneToMany(mappedBy = "organization",cascade= CascadeType.ALL)
+    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL)
     private Set<Department> departments = new HashSet<>();
 }

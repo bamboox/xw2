@@ -38,7 +38,7 @@ public class Task extends AbstractTimestampEntity {
     @OrderBy("gmtCreated ASC")
     private Set<Image> imageSet = new HashSet<Image>();
 
-    @ManyToOne(fetch=FetchType.LAZY,optional=true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "wfe_id")
     @JSONField(serialize = false)
     private Wfe wfe;

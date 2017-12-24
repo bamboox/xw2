@@ -1,11 +1,10 @@
 package com.ace.controller.home;
 
-import java.util.List;
-
-import javax.validation.constraints.NotNull;
-
 import com.ace.common.base.ApiBaseFileReqParam;
 import lombok.Data;
+
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * Created by bamboo on 17-12-2.

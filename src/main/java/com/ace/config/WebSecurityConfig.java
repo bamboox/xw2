@@ -1,4 +1,5 @@
 package com.ace.config;
+
 import com.ace.service.CustomUserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,55 +19,57 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled=true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-	@Bean
-	protected UserDetailsService customUserService() {
-		return new CustomUserService();
-	}
+    @Bean
+    protected UserDetailsService customUserService() {
+        return new CustomUserService();
+    }
 
-	/*@Autowired
-	public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-		authenticationManagerBuilder
-				// 设置UserDetailsService
-				.userDetailsService(customUserService())
-				// 使用BCrypt进行密码的hash
-				.passwordEncoder(passwordEncoder());
-	}*/
-	// 装载BCrypt密码编码器
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-	@Bean
-	public DaoAuthenticationProvider authenticationProvider() {
-		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-		authenticationProvider.setUserDetailsService(customUserService());
-		authenticationProvider.setPasswordEncoder(passwordEncoder());
-		return authenticationProvider;
-	}
-	@Bean
+    /*@Autowired
+    public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+        authenticationManagerBuilder
+                // 设置UserDetailsService
+                .userDetailsService(customUserService())
+                // 使用BCrypt进行密码的hash
+                .passwordEncoder(passwordEncoder());
+    }*/
+    // 装载BCrypt密码编码器
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(customUserService());
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        return authenticationProvider;
+    }
+
+    @Bean
     public JwtAuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {
         return new JwtAuthenticationTokenFilter();
     }
 
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth
-				// 设置UserDetailsService
-				.userDetailsService(customUserService())
-				// 使用BCrypt进行密码的hash
-				.passwordEncoder(passwordEncoder());
-	}
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth
+                // 设置UserDetailsService
+                .userDetailsService(customUserService())
+                // 使用BCrypt进行密码的hash
+                .passwordEncoder(passwordEncoder());
+    }
 
-	@Bean
-	@Override
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-		return super.authenticationManagerBean();
-	}
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 
-	@Override
-	protected void configure(HttpSecurity httpSecurity) throws Exception {
+    @Override
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
 //		 添加JWT filter
 //		http.addFilterBefore(authenticationTokenFilterBean(),UsernamePasswordAuthenticationFilter.class);
 //		http.authorizeRequests().antMatchers("/**").permitAll();
@@ -75,35 +78,35 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //		.anyRequest().authenticated().and().formLogin().loginPage("/login")
 //				.failureUrl("/login?error").permitAll().and().logout().permitAll();
 
-		httpSecurity
-				// 由于使用的是JWT，我们这里不需要csrf
-				.csrf().disable()
-				// 基于token，所以不需要session
-				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-				.authorizeRequests()
-				//.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-				// 允许对于网站静态资源的无授权访问
-				.antMatchers(
-						HttpMethod.GET,
-						"/",
-						"/*.html",
-						"/favicon.ico",
-						"/**/*.html",
-						"/**/*.css",
-						"/**/*.js"
-				).permitAll()
-            //swagger-ui
-				.antMatchers("/v2/api-docs", "/configuration/ui/**", "/swagger-resources/**", "/configuration/security/**",
-						"/swagger-ui.html", "/webjars/**", "/images/**").permitAll()
-				// 对于获取token的rest api要允许匿名访问
-				.antMatchers("/auth/**").permitAll()
+        httpSecurity
+                // 由于使用的是JWT，我们这里不需要csrf
+                .csrf().disable()
+                // 基于token，所以不需要session
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .authorizeRequests()
+                //.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // 允许对于网站静态资源的无授权访问
+                .antMatchers(
+                        HttpMethod.GET,
+                        "/",
+                        "/*.html",
+                        "/favicon.ico",
+                        "/**/*.html",
+                        "/**/*.css",
+                        "/**/*.js"
+                ).permitAll()
+                //swagger-ui
+                .antMatchers("/v2/api-docs", "/configuration/ui/**", "/swagger-resources/**", "/configuration/security/**",
+                        "/swagger-ui.html", "/webjars/**", "/images/**").permitAll()
+                // 对于获取token的rest api要允许匿名访问
+                .antMatchers("/auth/**").permitAll()
 //				.antMatchers("/api/image/view/**").permitAll()
-				// 除上面外的所有请求全部需要鉴权认证
-				.anyRequest().authenticated();
-		// 添加JWT filter
-		httpSecurity
-				.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
-		// 禁用缓存
-		httpSecurity.headers().cacheControl();
-	}
+                // 除上面外的所有请求全部需要鉴权认证
+                .anyRequest().authenticated();
+        // 添加JWT filter
+        httpSecurity
+                .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
+        // 禁用缓存
+        httpSecurity.headers().cacheControl();
+    }
 }

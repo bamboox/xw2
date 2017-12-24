@@ -5,6 +5,8 @@ import com.ace.entity.Discovery;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 /**
  * Created by bamboo on 17-12-2.
  */
@@ -14,5 +16,7 @@ public interface DiscoveryRepository extends ReadOnlyPagingAndSortingRepository<
 
     Page<Discovery> findAll(Pageable pageable);
 
-    Discovery findByUserIdAndId(String userId,String id);
+    Discovery findByUserIdAndId(String userId, String id);
+
+    List<Discovery> findByDepartmentId(String departmentId);
 }

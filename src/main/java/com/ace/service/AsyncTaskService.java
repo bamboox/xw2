@@ -34,7 +34,7 @@ public class AsyncTaskService {
                         String extensionName = StringUtils.substringAfter(fileName, ".");
                         String newFileName = String.valueOf(System.currentTimeMillis()) + "." + extensionName;
                         String dataDirectory = organizationId.concat(File.separator).concat(departmentId).concat(
-                            File.separator).concat(userId).concat(File.separator);
+                                File.separator).concat(userId).concat(File.separator);
                         String filePath = webUploadPath.concat(dataDirectory);
                         File dest = new File(filePath, newFileName);
                         if (!dest.getParentFile().exists()) {

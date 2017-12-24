@@ -3,6 +3,7 @@ package com.ace.common.jpa;
 /**
  * Created by bamboo on 17-11-29.
  */
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -13,6 +14,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+
 /**
  * @author bamboo
  */
