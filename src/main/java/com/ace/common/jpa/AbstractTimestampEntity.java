@@ -30,7 +30,7 @@ public abstract class AbstractTimestampEntity implements Serializable {
     @CreatedDate
     @Column(name = "gmt_created", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     // DEFAULT CURRENT_TIMESTAMP MUST be defined in MySQL 5.7
-            //    @Temporal(TemporalType.TIMESTAMP) // even with temporal TIMESTAMP type mysql still uses DATATIME type, and this the same for java.sql.Timestamp type
+            //@Temporal(TemporalType.TIMESTAMP) // even with temporal TIMESTAMP type mysql still uses DATATIME type, and this the same for java.sql.Timestamp type
             Timestamp gmtCreated;
     @ApiModelProperty(hidden = true)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
