@@ -59,7 +59,10 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.40</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -104,7 +107,6 @@
             <artifactId>guava</artifactId>
             <version>21.0</version>
         </dependency>
-
 
         <dependency>
             <groupId>org.hibernate</groupId>
