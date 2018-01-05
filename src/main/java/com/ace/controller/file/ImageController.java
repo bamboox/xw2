@@ -47,7 +47,8 @@ public class ImageController {
         this.imageRepository = imageRepository;
     }
 
-    @RequestMapping(value = "/{organizationId}/{departmentId}/{userId}/{filename:.+}", method = RequestMethod.GET)
+    //    @RequestMapping(value = "/{organizationId}/{departmentId}/{userId}/{filename:.+}", method = RequestMethod.GET)
+    @GetMapping(value = "/{organizationId}/{departmentId}/{userId}/{filename:.+}")
     @ResponseBody
     public void getFile(@PathVariable String organizationId,
                         @PathVariable String departmentId,
@@ -64,7 +65,7 @@ public class ImageController {
 
     }
 
-    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
         SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userId = sysUser.getId();

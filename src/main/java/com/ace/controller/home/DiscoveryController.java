@@ -102,8 +102,7 @@ public class DiscoveryController {
 
     }*/
 
-    @RequestMapping(value = "submit",
-            method = RequestMethod.POST,
+    @PostMapping(value = "submit",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
@@ -148,7 +147,7 @@ public class DiscoveryController {
         wfe.setDiscovery(discovery);
         wfe.setCreateUserId(userId);
         wfe.setCreateDepartmentId(departmentId);
-        wfe.setToDepartmentId(bizParams.getSendDepartmentId());
+
         wfe.setState("JUST_CREATED");
 
         Task createTask = new Task();
@@ -179,7 +178,17 @@ public class DiscoveryController {
 
         task.setNodeType("TASK_NODE");
         task.setState("UNSTATE");
-        task.setNextOperate("doing");
+        //if wenmingbang
+
+        String typeCode = department.getTypeCode();
+        if ("00000".equals(typeCode)) {//
+            task.setNextOperate("select");
+            Department fastenDepartment = departmentRepository.findByOrganization_IdAndTypeCode(organizationId, "00000");
+            wfe.setToDepartmentId(fastenDepartment.getId());
+        } else {
+            task.setNextOperate("doing");
+            wfe.setToDepartmentId(bizParams.getSendDepartmentId());
+        }
         task.setWfe(wfe);
         task.setOrderNo(1);
 
@@ -192,7 +201,7 @@ public class DiscoveryController {
         wfeRepository.save(wfe);
 
         String context = department.getName() + "部门发起反馈!";
-        msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()),
+        msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId(),"activity","wfe"),
                 bizParams.getSendDepartmentId());
 
         return ResponseEntity.created(URI.create(request.getRequestURI().concat(File.separator)

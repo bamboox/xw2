@@ -20,7 +20,7 @@ import java.util.Set;
 @Entity
 @Table(name = "wfe")
 public class Wfe extends AbstractTimestampEntity {
-
+    private String organizationId;
     private String createUserId;
 
     private String createDepartmentId;

@@ -23,19 +23,16 @@ public class VersionController {
     private VersionRepository versionRepository;
 
 
-    @RequestMapping(value = "/{version:[\\s\\S]*}_{versionFix:[\\s\\S]*}",
-            method = RequestMethod.GET,
-            produces = {"application/json", "application/xml"})
+    @GetMapping(value = "/{version:[\\s\\S]*}_{versionFix:[\\s\\S]*}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public ResponseEntity<?> getCurrentFixVersion(@PathVariable("version") String version,@PathVariable("versionFix") String versionFix
+    public ResponseEntity<?> getCurrentFixVersion(@PathVariable("version") String version, @PathVariable("versionFix") String versionFix
     ) throws Exception {
         Version versionObj = versionRepository.findFirstByVersionOrderByGmtCreatedDesc(version);
         return ResponseEntity.ok(ApiBaseResponse.fromHttpStatus(HttpStatus.OK, versionObj));
     }
-    @RequestMapping(
-            method = RequestMethod.GET,
-            produces = {"application/json", "application/xml"})
+
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ResponseEntity<?> getCurrentVersion(

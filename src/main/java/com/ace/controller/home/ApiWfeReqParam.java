@@ -18,6 +18,8 @@ public class ApiWfeReqParam {
     @NotNull
     private String operate;
 
+    private String departmentId;
+
     @NotNull
     private String message;
 

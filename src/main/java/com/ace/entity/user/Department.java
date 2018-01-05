@@ -24,6 +24,7 @@ public class Department extends AbstractTimestampEntity {
     private String contactPerson;
     private String contactNumber;
     private String type;
+    private String typeCode;
     @ManyToOne
     @JoinColumn(name = "organization_id")
     @JSONField(serialize = false)

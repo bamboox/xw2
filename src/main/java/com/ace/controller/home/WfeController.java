@@ -150,8 +150,7 @@ public class WfeController {
         return wfes;
     }
 
-    @RequestMapping(value = "operate",
-            method = RequestMethod.POST,
+    @PostMapping(value = "operate",
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "operate :doing pass refuse",
@@ -176,6 +175,7 @@ public class WfeController {
         SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userId = sysUser.getId();
         Department department = sysUser.getDepartment();
+        String fromDepartment = department.getName();
         String departmentId = sysUser.getDepartment().getId();
         String organizationId = department.getOrganization().getId();
 
@@ -184,8 +184,44 @@ public class WfeController {
 
         SysUser fromUser = sysUserRepository.findOne(task.getFromUserId());
 
+        if ("select".equals(operate)) {
 
-        if ("doing".equals(operate)) {
+            //
+            String selectDepartmentId = bizParams.getDepartmentId();
+            Department selectDepartment = departmentRepository.getOne(selectDepartmentId);
+
+            task.setToUserId(userId);
+            task.setToUserName(sysUser.getName());
+            task.setState("WAIT");
+            task.setMessage(message);
+
+            taskRepository.save(task);
+
+            Task createTask = new Task();
+            createTask.setFromDepartmentId(department.getId());
+            createTask.setFromDepartmentName(department.getName());
+            createTask.setFromUserId(userId);
+            createTask.setFromUserName(sysUser.getName());
+
+            createTask.setToDepartmentId(selectDepartment.getId());
+            createTask.setToDepartmentName(selectDepartment.getName());
+
+            createTask.setNodeType("TASK_NODE");
+            createTask.setOrderNo(task.getOrderNo() + 1);
+            createTask.setState("UNSTATE");
+            createTask.setNextOperate("doing");
+            createTask.setWfe(wfe);
+
+            taskRepository.save(createTask);
+            wfe.setState("RUNNING");
+            wfeRepository.save(wfe);
+
+            String context = fromDepartment + "发起反馈!";
+            msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId(), "activity", "wfe"),
+                    task.getFromDepartmentId());
+
+
+        } else if ("doing".equals(operate)) {
             task.setToUserId(userId);
             task.setToUserName(sysUser.getName());
             task.setState("WAIT");
@@ -219,8 +255,8 @@ public class WfeController {
             wfe.setState("RUNNING");
             wfeRepository.save(wfe);
 
-            String context = fromUser.getName() + "发起反馈!";
-            msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()),
+            String context = fromDepartment + "发起反馈!";
+            msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId(), "activity", "wfe"),
                     task.getFromDepartmentId());
 
         } else if ("pass".equals(operate)) {
@@ -246,8 +282,8 @@ public class WfeController {
             wfe.setState("COMPLETED");
             wfeRepository.save(wfe);
 
-            String context = fromUser.getName() + "发起反馈!";
-            msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()),
+            String context = fromDepartment + "发起反馈!";
+            msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId(), "activity", "wfe"),
                     task.getFromDepartmentId());
 
         } else if ("refuse".equals(operate)) {
@@ -274,12 +310,12 @@ public class WfeController {
 
             taskRepository.save(createTask);
 
-            String context = fromUser.getName() + "发起反馈!";
-            msgService.sendMsgByAlias(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()), task.getFromUserId());
+            String context = fromDepartment + "发起反馈!";
+            msgService.sendMsgByAlias(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()), task.getFromUserId(), "activity", "wfe");
 
         } else if ("reminder".equals(operate)) {
-            String context = fromUser.getName() + "发来提醒!";
-            msgService.sendMsgByAlias(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()), task.getFromUserId());
+            String context = fromDepartment + "发来提醒!";
+            msgService.sendMsgByAlias(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()), task.getFromUserId(), "activity", "wfe");
         } else if ("recall".equals(operate)) {
 
 

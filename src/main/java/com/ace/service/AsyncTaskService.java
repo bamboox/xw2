@@ -57,7 +57,11 @@ public class AsyncTaskService {
     }
 
     public Set<Image> save2Qiniu(List<ApiBaseFileReqParam> files, String keyPrefix, String userId) {
+
         Set<Image> imageSet = Sets.newHashSet();
+        if (files == null) {
+            return imageSet;
+        }
         for (int i = 0; i < files.size(); i++) {
             ApiBaseFileReqParam file = files.get(i);
             if (!Strings.isNullOrEmpty(file.getBase64())) {
@@ -74,6 +78,9 @@ public class AsyncTaskService {
 
     @Async
     public void uploadQiniu(String keyPrefix, List<ApiBaseFileReqParam> files) {
+        if (files == null) {
+            return;
+        }
         for (int i = 0; i < files.size(); i++) {
             ApiBaseFileReqParam file = files.get(i);
             if (!Strings.isNullOrEmpty(file.getBase64())) {
