@@ -147,6 +147,7 @@ public class DiscoveryController {
         wfe.setDiscovery(discovery);
         wfe.setCreateUserId(userId);
         wfe.setCreateDepartmentId(departmentId);
+        wfe.setOrganizationId(organizationId);
 
         wfe.setState("JUST_CREATED");
 
