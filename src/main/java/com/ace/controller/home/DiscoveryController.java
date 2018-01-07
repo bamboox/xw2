@@ -183,11 +183,11 @@ public class DiscoveryController {
 
         String typeCode = department.getTypeCode();
         if ("00000".equals(typeCode)) {//
-            task.setNextOperate("select");
+            task.setNextOperate("doing");
             Department fastenDepartment = departmentRepository.findByOrganization_IdAndTypeCode(organizationId, "00000");
             wfe.setToDepartmentId(fastenDepartment.getId());
         } else {
-            task.setNextOperate("doing");
+            task.setNextOperate("select");
             wfe.setToDepartmentId(bizParams.getSendDepartmentId());
         }
         task.setWfe(wfe);

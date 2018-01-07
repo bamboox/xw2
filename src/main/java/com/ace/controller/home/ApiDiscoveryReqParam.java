@@ -20,8 +20,8 @@ public class ApiDiscoveryReqParam {
     @NotBlank
     @ApiParam(required = true)
     private String description;
-    @NotBlank
-    @ApiParam(required = true)
+//    @NotBlank
+//    @ApiParam(required = true)
     private String sendDepartmentId;
     private List<ApiBaseFileReqParam> files;
 
