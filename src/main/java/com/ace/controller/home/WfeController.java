@@ -110,8 +110,7 @@ public class WfeController {
         return wfes;
     }
 
-    @RequestMapping(value = "create",
-            method = RequestMethod.GET,
+    @GetMapping(value = "create",
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Get a paginated list of all WfeTask.",
