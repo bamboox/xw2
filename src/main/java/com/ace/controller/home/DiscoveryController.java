@@ -174,8 +174,6 @@ public class DiscoveryController {
         task.setFromUserId(userId);
         task.setFromUserName(sysUser.getName());
 
-        task.setToDepartmentId(bizParams.getSendDepartmentId());
-        task.setToDepartmentName(departmentRepository.findOne(bizParams.getSendDepartmentId()).getName());
 
         task.setNodeType("TASK_NODE");
         task.setState("UNSTATE");
@@ -183,12 +181,18 @@ public class DiscoveryController {
 
         String typeCode = department.getTypeCode();
         if ("00000".equals(typeCode)) {//
+
             task.setNextOperate("doing");
-            Department fastenDepartment = departmentRepository.findByOrganization_IdAndTypeCode(organizationId, "00000");
-            wfe.setToDepartmentId(fastenDepartment.getId());
-        } else {
-            task.setNextOperate("select");
+            task.setToDepartmentId(bizParams.getSendDepartmentId());
+            task.setToDepartmentName(departmentRepository.findOne(bizParams.getSendDepartmentId()).getName());
             wfe.setToDepartmentId(bizParams.getSendDepartmentId());
+        } else {
+            Department fastenDepartment = departmentRepository.findByOrganization_IdAndTypeCode(organizationId, "00000");
+
+            task.setNextOperate("select");
+            task.setToDepartmentId(fastenDepartment.getId());
+            task.setToDepartmentName(fastenDepartment.getName());
+            wfe.setToDepartmentId(fastenDepartment.getId());
         }
         task.setWfe(wfe);
         task.setOrderNo(1);
@@ -202,7 +206,7 @@ public class DiscoveryController {
         wfeRepository.save(wfe);
 
         String context = department.getName() + "部门发起反馈!";
-        msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId(),"activity","wfe"),
+        msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId(), "activity", "wfe"),
                 bizParams.getSendDepartmentId());
 
         return ResponseEntity.created(URI.create(request.getRequestURI().concat(File.separator)
