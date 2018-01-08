@@ -20,7 +20,6 @@ public class ApiWfeReqParam {
 
     private String departmentId;
 
-    @NotNull
     private String message;
 
     private List<ApiBaseFileReqParam> files;

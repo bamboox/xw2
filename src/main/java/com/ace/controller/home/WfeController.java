@@ -164,7 +164,7 @@ public class WfeController {
         String operate = bizParams.getOperate();
         String message = bizParams.getMessage();
         List<ApiBaseFileReqParam> files = bizParams.getFiles();
-        if (files.size() > 6) {
+        if (files != null && files.size() > 6) {
             throw new DataFormatException("files length max 6");
         }
         //operate pass
