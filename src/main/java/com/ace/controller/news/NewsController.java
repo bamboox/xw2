@@ -3,6 +3,7 @@ package com.ace.controller.news;
 import com.ace.common.base.ApiBaseFileReqParam;
 import com.ace.common.base.ApiBaseReqParam;
 import com.ace.common.base.ApiBaseResponse;
+import com.ace.common.base.BaseController;
 import com.ace.entity.News;
 import com.ace.entity.file.Image;
 import com.ace.entity.user.Department;
@@ -38,7 +39,7 @@ import java.util.stream.Collectors;
 @Api
 @RestController
 @RequestMapping("/api/news")
-public class NewsController {
+public class NewsController extends BaseController {
 
     @Autowired
     private NewsRepository newsRepository;
@@ -57,11 +58,13 @@ public class NewsController {
     @ResponseBody
     public ResponseEntity<?> submit(@RequestBody ApiBaseReqParam<ApiNewsReqParam> apiNewsReqParam) throws Exception {
 
-        SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        /*SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userId = sysUser.getId();
         Department department = sysUser.getDepartment();
         String departmentId = sysUser.getDepartment().getId();
-        String organizationId = department.getOrganization().getId();
+        String organizationId = department.getOrganization().getId();*/
+
+        initBaseInfo();
 
         ApiNewsReqParam bizParams = apiNewsReqParam.getBizParams();
         String toDepartmentJson = bizParams.getToDepartmentJson();
@@ -93,7 +96,8 @@ public class NewsController {
 
         Set<Image> imageSet = asyncTaskService.save2Qiniu(files, keyPrefix, userId);
         asyncTaskService.uploadQiniu(keyPrefix, files);
-        news.setFiles(Joiner.on(",").join(imageSet));
+
+        news.setFiles(Joiner.on(",").join(imageSet.stream().map(Image::getUrl).collect(Collectors.toList())));
 
         newsRepository.save(news);
         //
