@@ -129,6 +129,7 @@ public class DiscoveryController {
         Discovery discovery = new Discovery();
         discovery.setLatitude(bizParams.getLatitude());
         discovery.setLongitude(bizParams.getLongitude());
+        discovery.setOrganizationId(organizationId);
         discovery.setLocation(bizParams.getLocation());
         discovery.setDescription(bizParams.getDescription());
         discovery.setUserId(userId);
@@ -185,6 +186,7 @@ public class DiscoveryController {
             task.setNextOperate("doing");
             task.setToDepartmentId(bizParams.getSendDepartmentId());
             task.setToDepartmentName(departmentRepository.findOne(bizParams.getSendDepartmentId()).getName());
+
             wfe.setToDepartmentId(bizParams.getSendDepartmentId());
         } else {
             Department fastenDepartment = departmentRepository.findByOrganization_IdAndTypeCode(organizationId, "00000");
@@ -192,6 +194,7 @@ public class DiscoveryController {
             task.setNextOperate("select");
             task.setToDepartmentId(fastenDepartment.getId());
             task.setToDepartmentName(fastenDepartment.getName());
+
             wfe.setToDepartmentId(fastenDepartment.getId());
         }
         task.setWfe(wfe);

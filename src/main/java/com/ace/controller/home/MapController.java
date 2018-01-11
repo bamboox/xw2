@@ -1,6 +1,7 @@
 package com.ace.controller.home;
 
 import com.ace.common.base.ApiBaseResponse;
+import com.ace.entity.user.Department;
 import com.ace.entity.user.SysUser;
 import com.ace.repository.DiscoveryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,11 @@ public class MapController {
     public ResponseEntity<?> getMapData() {
         SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userId = sysUser.getId();
+        Department department = sysUser.getDepartment();
         String departmentId = sysUser.getDepartment().getId();
-        return ResponseEntity.ok(ApiBaseResponse.fromHttpStatus(HttpStatus.OK, discoveryRepository.findByDepartmentId(departmentId)));
+        String organizationId = department.getOrganization().getId();
+
+        
+        return ResponseEntity.ok(ApiBaseResponse.fromHttpStatus(HttpStatus.OK, discoveryRepository.findByOrganizationId(organizationId)));
     }
 }

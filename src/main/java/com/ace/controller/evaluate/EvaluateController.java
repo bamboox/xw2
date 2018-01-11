@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/evaluate")
 public class EvaluateController {
+
     @Autowired
     private EvaluateRepository evaluateRepository;
     @GetMapping(

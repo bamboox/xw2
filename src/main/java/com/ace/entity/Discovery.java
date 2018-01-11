@@ -27,7 +27,7 @@ public class Discovery extends AbstractTimestampEntity {
     private Double latitude;
     private Double longitude;
     private String location;
-
+    private String organizationId;
     private String description;
 
     @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)

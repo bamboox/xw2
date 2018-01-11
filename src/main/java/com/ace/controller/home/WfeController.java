@@ -217,7 +217,7 @@ public class WfeController {
 
             String context = fromDepartment + "发起反馈!";
             msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId(), "activity", "wfe"),
-                    task.getFromDepartmentId());
+                    selectDepartmentId);
 
 
         } else if ("doing".equals(operate)) {
