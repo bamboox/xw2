@@ -191,7 +191,7 @@ public class WfeController {
 
             task.setToUserId(userId);
             task.setToUserName(sysUser.getName());
-            task.setState("WAIT");
+            task.setState("SELECTED");
             task.setMessage(message);
 
             taskRepository.save(task);
@@ -223,7 +223,7 @@ public class WfeController {
         } else if ("doing".equals(operate)) {
             task.setToUserId(userId);
             task.setToUserName(sysUser.getName());
-            task.setState("WAIT");
+            task.setState("DONE");
             task.setMessage(message);
 
             String keyPrefix = organizationId + "_" + departmentId + "_" + userId + "_" + String.valueOf(
@@ -320,7 +320,7 @@ public class WfeController {
 
             /*task.setToUserId(userId);
             task.setToUserName(sysUser.getName());*/
-            task.setState("recall");
+            task.setState("RECALL");
             task.setMessage(message);
             taskRepository.save(task);
 

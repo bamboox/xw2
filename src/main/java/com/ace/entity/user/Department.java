@@ -2,6 +2,7 @@ package com.ace.entity.user;
 
 import com.ace.common.jpa.AbstractTimestampEntity;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -27,10 +28,10 @@ public class Department extends AbstractTimestampEntity {
     private String typeCode;
     @ManyToOne
     @JoinColumn(name = "organization_id")
-    @JSONField(serialize = false)
     private Organization organization;
 
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
     @JSONField(serialize = false)
+    @JsonIgnore
     private Set<SysUser> sysUsers = new HashSet<>();
 }

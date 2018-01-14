@@ -36,7 +36,7 @@ public class Discovery extends AbstractTimestampEntity {
     private String userId;
     private String departmentId;
 
-    @OneToOne(mappedBy = "discovery")
+    @OneToOne(mappedBy = "discovery",fetch = FetchType.EAGER)
     @JSONField(serialize = false)
     private Wfe wfe;
 }
