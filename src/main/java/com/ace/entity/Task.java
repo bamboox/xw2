@@ -2,6 +2,9 @@ package com.ace.entity;
 
 import com.ace.common.jpa.AbstractTimestampEntity;
 import com.ace.entity.file.Image;
+import com.ace.enums.NodeEnum;
+import com.ace.enums.OperateEnum;
+import com.ace.enums.TaskEnum;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,7 +37,7 @@ public class Task extends AbstractTimestampEntity {
     private String toUserName;
 
     private String message;
-    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.ALL})
     @OrderBy("gmtCreated ASC")
     private Set<Image> imageSet = new HashSet<Image>();
 
@@ -45,11 +48,29 @@ public class Task extends AbstractTimestampEntity {
 
     //节点类型（开始、结束节点或任务节点）Start、End和TaskNode
     private String nodeType;
+    private String nodeTypeV;
+
+    private String getNodeTypeV() {
+        return NodeEnum.valueOf(state).getValue();
+    }
+
     //WAIT / COMPLETED
     private String state;
+    @Transient
+    private String stateV;
+
+    private String getStateV() {
+        return TaskEnum.valueOf(state).getValue();
+    }
+
     private int orderNo;
     private String nextOperate;
+    @Transient
+    private String nextOperateV;
 
+    private String getNextOperateV() {
+        return OperateEnum.valueOf(state).getValue();
+    }
 
     public Task(String fromUserId, String fromUserName, String fromDepartmentId, String fromDepartmentName) {
         this.fromUserId = fromUserId;

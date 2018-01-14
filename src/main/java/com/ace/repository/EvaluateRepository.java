@@ -11,6 +11,6 @@ import org.springframework.cache.annotation.Cacheable;
 
 @CacheConfig(cacheNames = "EVALUATE")
 public interface EvaluateRepository extends ReadOnlyPagingAndSortingRepository<Evaluate, String> {
-    @Cacheable(key="#p0")
+    @Cacheable(key = "#p0")
     Evaluate findByOrganizationId(String oId);
 }

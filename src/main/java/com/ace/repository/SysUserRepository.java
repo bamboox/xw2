@@ -10,10 +10,10 @@ import org.springframework.cache.annotation.Cacheable;
  */
 //@CacheConfig(cacheNames = "SysUser")
 public interface SysUserRepository extends ReadOnlyPagingAndSortingRepository<SysUser, String> {
-    @Cacheable(value = "SYS_USER", key="#p0")
+    @Cacheable(value = "SYS_USER", key = "#p0")
     SysUser findByUsername(String username);
 
     @Override
-    @CachePut(value = "SYS_USER",key = "#p0.username")
+    @CachePut(value = "SYS_USER", key = "#p0.username")
     SysUser save(SysUser paramS);
 }

@@ -22,22 +22,22 @@ public class BaseCacheKey implements Serializable {
     private final String className;
     private final String methodName;
 
-    public BaseCacheKey(Object target, Method method, Object[] elements){
-        this.className=target.getClass().getName();
-        this.methodName=getMethodName(method);
+    public BaseCacheKey(Object target, Method method, Object[] elements) {
+        this.className = target.getClass().getName();
+        this.methodName = getMethodName(method);
         this.params = new Object[elements.length];
         System.arraycopy(elements, 0, this.params, 0, elements.length);
-        this.hashCode=generatorHashCode();
+        this.hashCode = generatorHashCode();
     }
 
-    private String getMethodName(Method method){
+    private String getMethodName(Method method) {
         StringBuilder builder = new StringBuilder(method.getName());
         Class<?>[] types = method.getParameterTypes();
-        if(types.length!=0){
+        if (types.length != 0) {
             builder.append("(");
-            for(Class<?> type:types){
+            for (Class<?> type : types) {
                 String name = type.getName();
-                builder.append(name+",");
+                builder.append(name + ",");
             }
             builder.append(")");
         }
@@ -45,19 +45,19 @@ public class BaseCacheKey implements Serializable {
     }
 
     @Override
-    public boolean equals(Object obj){
-        if(this==obj)
+    public boolean equals(Object obj) {
+        if (this == obj)
             return true;
         if (obj == null)
             return false;
         if (getClass() != obj.getClass())
             return false;
-        BaseCacheKey o=(BaseCacheKey) obj;
-        if(this.hashCode!=o.hashCode())
+        BaseCacheKey o = (BaseCacheKey) obj;
+        if (this.hashCode != o.hashCode())
             return false;
-        if(!Optional.ofNullable(o.className).orElse("").equals(this.className))
+        if (!Optional.ofNullable(o.className).orElse("").equals(this.className))
             return false;
-        if(!Optional.ofNullable(o.methodName).orElse("").equals(this.methodName))
+        if (!Optional.ofNullable(o.methodName).orElse("").equals(this.methodName))
             return false;
         if (!Arrays.equals(params, o.params))
             return false;

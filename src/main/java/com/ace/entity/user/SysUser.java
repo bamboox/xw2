@@ -45,7 +45,7 @@ public class SysUser extends AbstractTimestampEntity implements UserDetails {
 //        List<SysRole> roles = this.getRoles();
 //        for (SysRole role : roles) {
 //            auths.add(new SimpleGrantedAuthority(role.getName()));
-            auths.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        auths.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
 //        }
         return auths;
     }

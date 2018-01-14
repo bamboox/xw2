@@ -24,6 +24,7 @@ public class EvaluateController {
 
     @Autowired
     private EvaluateRepository evaluateRepository;
+
     @GetMapping(
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)

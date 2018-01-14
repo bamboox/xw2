@@ -37,7 +37,7 @@ public class MapController {
         String departmentId = sysUser.getDepartment().getId();
         String organizationId = department.getOrganization().getId();
 
-        
+
         return ResponseEntity.ok(ApiBaseResponse.fromHttpStatus(HttpStatus.OK, discoveryRepository.findByOrganizationId(organizationId)));
     }
 }

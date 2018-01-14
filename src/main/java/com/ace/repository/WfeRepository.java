@@ -17,17 +17,22 @@ import java.util.List;
 public interface WfeRepository extends ReadOnlyPagingAndSortingRepository<Wfe, String> {
     @Cacheable
     Page<Wfe> findDistinctByTaskSet_ToDepartmentIdAndTaskSet_ToUserIdIsNull(String departmentId, Pageable pageable);
+
     @Cacheable
     Page<Wfe> findDistinctByTaskSet_ToDepartmentIdAndTaskSet_ToUserIdAndTaskSet_NodeType(String departmentId, String userId, String nodeType, Pageable pageable);
+
     //    Page<Wfe> findDistinctById(String departmentId, String fromDepartmentId, Pageable pageable);
     List<Wfe> findDistinctById(String id);
+
     @Cacheable
     Page<Wfe> findDistinctByStateNotAndTaskSet_ToDepartmentIdOrTaskSet_FromDepartmentId(String state, String toDepartmentId, String fromDepartmentId, Pageable pageable);
+
     @Cacheable
     Page<Wfe> findDistinctByTaskSet_ToDepartmentIdAndTaskSet_ToUserId(String departmentId, String userId, Pageable pageable);
+
     @Cacheable
     Page<Wfe> findDistinctByCreateUserId(String userId, Pageable pageable);
 
-    @CacheEvict(allEntries=true)
+    @CacheEvict(allEntries = true)
     <S extends Wfe> S save(S paramS);
 }

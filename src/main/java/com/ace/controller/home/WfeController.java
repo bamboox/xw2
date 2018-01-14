@@ -9,6 +9,10 @@ import com.ace.entity.Wfe;
 import com.ace.entity.file.Image;
 import com.ace.entity.user.Department;
 import com.ace.entity.user.SysUser;
+import com.ace.enums.NodeEnum;
+import com.ace.enums.OperateEnum;
+import com.ace.enums.TaskEnum;
+import com.ace.enums.WfeEnum;
 import com.ace.repository.DepartmentRepository;
 import com.ace.repository.SysUserRepository;
 import com.ace.repository.TaskRepository;
@@ -183,7 +187,7 @@ public class WfeController {
 
         SysUser fromUser = sysUserRepository.findOne(task.getFromUserId());
 
-        if ("select".equals(operate)) {
+        if (OperateEnum.SELECT.name().equals(operate)) {
 
             //
             String selectDepartmentId = bizParams.getDepartmentId();
@@ -191,7 +195,7 @@ public class WfeController {
 
             task.setToUserId(userId);
             task.setToUserName(sysUser.getName());
-            task.setState("SELECTED");
+            task.setState(TaskEnum.SELECTED.name());
             task.setMessage(message);
 
             taskRepository.save(task);
@@ -205,14 +209,14 @@ public class WfeController {
             createTask.setToDepartmentId(selectDepartment.getId());
             createTask.setToDepartmentName(selectDepartment.getName());
 
-            createTask.setNodeType("TASK_NODE");
+            createTask.setNodeType(NodeEnum.TASK_NODE.name());
             createTask.setOrderNo(task.getOrderNo() + 1);
-            createTask.setState("UNSTATE");
-            createTask.setNextOperate("doing");
+            createTask.setState(TaskEnum.UN_STATE.name());
+            createTask.setNextOperate(OperateEnum.DOING.name());
             createTask.setWfe(wfe);
 
             taskRepository.save(createTask);
-            wfe.setState("RUNNING");
+            wfe.setState(WfeEnum.RUNNING.name());
             wfeRepository.save(wfe);
 
             String context = fromDepartment + "发起反馈!";
@@ -220,10 +224,10 @@ public class WfeController {
                     selectDepartmentId);
 
 
-        } else if ("doing".equals(operate)) {
+        } else if (OperateEnum.DOING.name().equals(operate)) {
             task.setToUserId(userId);
             task.setToUserName(sysUser.getName());
-            task.setState("DONE");
+            task.setState(TaskEnum.DONE.name());
             task.setMessage(message);
 
             String keyPrefix = organizationId + "_" + departmentId + "_" + userId + "_" + String.valueOf(
@@ -244,24 +248,24 @@ public class WfeController {
             createTask.setToDepartmentId(task.getFromDepartmentId());
             createTask.setToDepartmentName(task.getFromDepartmentName());
 
-            createTask.setNodeType("TASK_NODE");
+            createTask.setNodeType(NodeEnum.TASK_NODE.name());
             createTask.setOrderNo(task.getOrderNo() + 1);
-            createTask.setState("UNSTATE");
-            createTask.setNextOperate("pass;refuse");
+            createTask.setState(TaskEnum.UN_STATE.name());
+            createTask.setNextOperate(OperateEnum.PASS.name() + ";" + OperateEnum.REFUSE.name());
             createTask.setWfe(wfe);
 
             taskRepository.save(createTask);
-            wfe.setState("RUNNING");
+            wfe.setState(WfeEnum.RUNNING.name());
             wfeRepository.save(wfe);
 
             String context = fromDepartment + "发起反馈!";
             msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId(), "activity", "wfe"),
                     task.getFromDepartmentId());
 
-        } else if ("pass".equals(operate)) {
+        } else if (OperateEnum.PASS.name().equals(operate)) {
             task.setToUserId(userId);
             task.setToUserName(sysUser.getName());
-            task.setState("PASS");
+            task.setState(TaskEnum.PASS.name());
             task.setMessage(message);
             taskRepository.save(task);
 
@@ -278,17 +282,17 @@ public class WfeController {
 
             taskRepository.save(createTask);*/
 
-            wfe.setState("COMPLETED");
+            wfe.setState(WfeEnum.COMPLETED.name());
             wfeRepository.save(wfe);
 
             String context = fromDepartment + "发起反馈!";
             msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId(), "activity", "wfe"),
                     task.getFromDepartmentId());
 
-        } else if ("refuse".equals(operate)) {
+        } else if (OperateEnum.REFUSE.name().equals(operate)) {
             task.setToUserId(userId);
             task.setToUserName(sysUser.getName());
-            task.setState("REFUSE");
+            task.setState(TaskEnum.REFUSE.name());
             task.setMessage(message);
             taskRepository.save(task);
 
@@ -301,10 +305,10 @@ public class WfeController {
             createTask.setToDepartmentId(task.getFromDepartmentId());
             createTask.setToDepartmentName(task.getFromDepartmentName());
 
-            createTask.setNodeType("TASK_NODE");
-            createTask.setState("UNSTATE");
+            createTask.setNodeType(NodeEnum.TASK_NODE.name());
+            createTask.setState(TaskEnum.UN_STATE.name());
             createTask.setOrderNo(task.getOrderNo() + 1);
-            createTask.setNextOperate("doing");
+            createTask.setNextOperate(OperateEnum.DOING.name());
             createTask.setWfe(wfe);
 
             taskRepository.save(createTask);
@@ -312,20 +316,20 @@ public class WfeController {
             String context = fromDepartment + "发起反馈!";
             msgService.sendMsgByAlias(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()), task.getFromUserId(), "activity", "wfe");
 
-        } else if ("reminder".equals(operate)) {
+        } else if (OperateEnum.REMINDER.name().equals(operate)) {
             String context = fromDepartment + "发来提醒!";
             msgService.sendMsgByAlias(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()), task.getFromUserId(), "activity", "wfe");
-        } else if ("recall".equals(operate)) {
+        } else if (OperateEnum.RECALL.name().equals(operate)) {
 
 
             /*task.setToUserId(userId);
             task.setToUserName(sysUser.getName());*/
-            task.setState("RECALL");
+            task.setState(TaskEnum.RECALL.name());
             task.setMessage(message);
             taskRepository.save(task);
 
 
-            wfe.setState("RECALL");
+            wfe.setState(WfeEnum.RECALL.name());
             wfeRepository.save(wfe);
         } else {
             throw new DataFormatException("operate not exits");
@@ -380,13 +384,13 @@ public class WfeController {
         Task lastTask = tasks[tasks.length - 1];
         Task task = taskRepository.findByWfe_IdAndOrderNo(wfe.getId(), 1);
         if (Strings.isNullOrEmpty(task.getToUserId())) {
-            lastTask.setNextOperate("recall");
+            lastTask.setNextOperate(OperateEnum.RECALL.name());
             wfe.setCurrentTask(lastTask);
         } else if (tasks.length > 2) {
             lastTask.setNextOperate("");
             wfe.setCurrentTask(lastTask);
         } else {
-            lastTask.setNextOperate("reminder");
+            lastTask.setNextOperate(OperateEnum.REMINDER.name());
             wfe.setCurrentTask(lastTask);
         }
         return wfe;

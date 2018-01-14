@@ -15,10 +15,11 @@ import org.springframework.data.domain.Pageable;
 public interface NewsRepository extends ReadOnlyPagingAndSortingRepository<News, String> {
     @Cacheable
     Page<News> findAllByOrganizationIdAndTitleContainingOrContextContaining(String oId, String title, String Context, Pageable pageable);
+
     @Cacheable
     Page<News> findAllByOrganizationIdAndToDepartmentJsonContainingAndTitleContainingOrContextContaining(String oId, String departmentId, String title, String Context, Pageable pageable);
 
     @Override
-    @CacheEvict(allEntries=true)
+    @CacheEvict(allEntries = true)
     <S extends News> S save(S paramS);
 }

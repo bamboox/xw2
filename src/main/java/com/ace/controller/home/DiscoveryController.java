@@ -10,6 +10,10 @@ import com.ace.entity.Wfe;
 import com.ace.entity.file.Image;
 import com.ace.entity.user.Department;
 import com.ace.entity.user.SysUser;
+import com.ace.enums.NodeEnum;
+import com.ace.enums.OperateEnum;
+import com.ace.enums.TaskEnum;
+import com.ace.enums.WfeEnum;
 import com.ace.repository.DepartmentRepository;
 import com.ace.repository.DiscoveryRepository;
 import com.ace.repository.TaskRepository;
@@ -150,7 +154,7 @@ public class DiscoveryController {
         wfe.setCreateDepartmentId(departmentId);
         wfe.setOrganizationId(organizationId);
 
-        wfe.setState("JUST_CREATED");
+        wfe.setState(WfeEnum.JUST_CREATED.name());
 
         Task createTask = new Task();
         createTask.setFromDepartmentId(departmentId);
@@ -163,9 +167,10 @@ public class DiscoveryController {
         createTask.setToUserId(userId);
         createTask.setToUserName(sysUser.getName());
 
-        createTask.setNodeType("START");
-        createTask.setState("START");
-        createTask.setNextOperate("recall");
+
+        createTask.setNodeType(NodeEnum.START.name());
+        createTask.setState(TaskEnum.START.name());
+        createTask.setNextOperate(OperateEnum.RECALL.name());
         createTask.setWfe(wfe);
         createTask.setOrderNo(0);
 
@@ -176,14 +181,14 @@ public class DiscoveryController {
         task.setFromUserName(sysUser.getName());
 
 
-        task.setNodeType("TASK_NODE");
-        task.setState("UNSTATE");
+        task.setNodeType(NodeEnum.TASK_NODE.name());
+        task.setState(TaskEnum.UN_STATE.name());
         //if wenmingbang
 
         String typeCode = department.getTypeCode();
         if ("00000".equals(typeCode)) {//
 
-            task.setNextOperate("doing");
+            task.setNextOperate(OperateEnum.DOING.name());
             task.setToDepartmentId(bizParams.getSendDepartmentId());
             task.setToDepartmentName(departmentRepository.findOne(bizParams.getSendDepartmentId()).getName());
 
@@ -191,7 +196,7 @@ public class DiscoveryController {
         } else {
             Department fastenDepartment = departmentRepository.findByOrganization_IdAndTypeCode(organizationId, "00000");
 
-            task.setNextOperate("select");
+            task.setNextOperate(OperateEnum.SELECT.name());
             task.setToDepartmentId(fastenDepartment.getId());
             task.setToDepartmentName(fastenDepartment.getName());
 

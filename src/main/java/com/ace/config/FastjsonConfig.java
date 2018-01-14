@@ -29,16 +29,14 @@ public class FastjsonConfig {
         return new HttpMessageConverters((HttpMessageConverter<?>) fastConvert);
     }
 }
+
 class SimplePropertyFilter implements PropertyFilter {
     /**
-     * @param obj
-     *            需要过滤的对象
-     * @param s
-     *            属性
-     * @param obj1
-     *            属性在内存中的存值 过滤不需要被序列化的属性，主要用于hibernate的代理和管理。
-     *            obj1是属性的值，hibernate加载出来后可能是HibernateProxy或PersistentCollection
-     *            过滤它
+     * @param obj  需要过滤的对象
+     * @param s    属性
+     * @param obj1 属性在内存中的存值 过滤不需要被序列化的属性，主要用于hibernate的代理和管理。
+     *             obj1是属性的值，hibernate加载出来后可能是HibernateProxy或PersistentCollection
+     *             过滤它
      */
     @Override
     public boolean apply(Object obj, String s, Object obj1) {

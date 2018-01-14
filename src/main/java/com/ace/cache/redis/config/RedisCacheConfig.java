@@ -27,6 +27,7 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
     private long redisDefaultExpiration;
     @Autowired
     private RedisConnectionFactory redisConnectionFactory;
+
     @Bean
     public RedisTemplate redisTemplate() {
         StringRedisTemplate redisTemplate = new StringRedisTemplate(redisConnectionFactory);
@@ -35,13 +36,14 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
         ObjectMapper om = new ObjectMapper();
         om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
         om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         jackson2JsonRedisSerializer.setObjectMapper(om);
 
         redisTemplate.setValueSerializer(new JdkSerializationRedisSerializer());
         redisTemplate.afterPropertiesSet();
         return redisTemplate;
     }
+
     /*@Bean
     public CacheManager cacheManager() {
         String[] cacheNames = {"app_default", "users", "blogs", "goods", "configs", "info"};
@@ -90,6 +92,7 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
         redisCacheManager.setDefaultExpiration(86400);
         return redisCacheManager;
     }
+
     @Bean
     @Override
     public KeyGenerator keyGenerator() {
@@ -100,7 +103,7 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
             for (Object obj : objects) {
                 sb.append(obj.toString());
             }*/
-            return new BaseCacheKey(target,method,objects).toString();
+            return new BaseCacheKey(target, method, objects).toString();
         };
     }
 }

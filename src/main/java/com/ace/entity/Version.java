@@ -34,13 +34,14 @@ public class Version extends AbstractTimestampEntity {
     public String getCurrentVersion() {
         return version.concat("_").concat(versionFix);
     }
+
     @Transient
     private String sign;
 
     public String getSign() {
-        TreeMap<String,String> treeMap= Maps.newTreeMap();
-        treeMap.put("version",getCurrentVersion());
+        TreeMap<String, String> treeMap = Maps.newTreeMap();
+        treeMap.put("version", getCurrentVersion());
         treeMap.put("size", String.valueOf(getSize()));
-        return SaltHelper.buildSign(treeMap,"ACE");
+        return SaltHelper.buildSign(treeMap, "ACE");
     }
 }

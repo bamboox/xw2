@@ -19,5 +19,6 @@ public interface DiscoveryRepository extends ReadOnlyPagingAndSortingRepository<
     Discovery findByUserIdAndId(String userId, String id);
 
     List<Discovery> findByDepartmentId(String departmentId);
+
     List<Discovery> findByOrganizationId(String organizationId);
 }

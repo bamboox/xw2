@@ -1,6 +1,7 @@
 package com.ace.entity;
 
 import com.ace.common.jpa.AbstractTimestampEntity;
+import com.ace.enums.WfeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -30,12 +31,19 @@ public class Wfe extends AbstractTimestampEntity {
     @JoinColumn(name = "discovery_Id")
     private Discovery discovery;
 
-    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "wfe")
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "wfe", fetch = FetchType.EAGER)
     @OrderBy("orderNo ASC")
     //    @JSONField(serialize = false)
     private Set<Task> taskSet = new HashSet<>();
     //JUST_CREATED、RUNNING、COMPLETED
     private String state;
+
+    @Transient
+    private String stateV;
+
+    private String getStateV() {
+        return WfeEnum.valueOf(state).getValue();
+    }
 
     @Transient
     private Task currentTask;

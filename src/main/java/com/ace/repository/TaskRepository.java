@@ -15,12 +15,14 @@ import org.springframework.data.domain.Pageable;
 public interface TaskRepository extends ReadOnlyPagingAndSortingRepository<Task, String> {
     @Cacheable
     Page<Task> findAllByToDepartmentIdAndToUserIdIsNull(String departmentId, Pageable pageable);
+
     @Cacheable
     Page<Task> findAllByToDepartmentIdAndToUserId(String departmentId, String userId, Pageable pageable);
+
     @Cacheable
     Task findByWfe_IdAndOrderNo(String wfeId, int orderNo);
 
     @Override
-    @CacheEvict(allEntries=true)
+    @CacheEvict(allEntries = true)
     <S extends Task> S save(S paramS);
 }
