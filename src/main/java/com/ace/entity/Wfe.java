@@ -42,7 +42,7 @@ public class Wfe extends AbstractTimestampEntity {
     private String stateV;
 
     private String getStateV() {
-        return WfeEnum.valueOf(state).getValue();
+        return WfeEnum.valueOf(stateV).getValue();
     }
 
     @Transient

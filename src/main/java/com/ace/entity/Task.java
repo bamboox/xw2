@@ -48,10 +48,11 @@ public class Task extends AbstractTimestampEntity {
 
     //节点类型（开始、结束节点或任务节点）Start、End和TaskNode
     private String nodeType;
+    @Transient
     private String nodeTypeV;
 
     private String getNodeTypeV() {
-        return NodeEnum.valueOf(state).getValue();
+        return NodeEnum.valueOf(nodeType).getValue();
     }
 
     //WAIT / COMPLETED
@@ -69,7 +70,7 @@ public class Task extends AbstractTimestampEntity {
     private String nextOperateV;
 
     private String getNextOperateV() {
-        return OperateEnum.valueOf(state).getValue();
+        return OperateEnum.valueOf(nextOperate).getValue();
     }
 
     public Task(String fromUserId, String fromUserName, String fromDepartmentId, String fromDepartmentName) {
