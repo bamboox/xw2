@@ -7,6 +7,7 @@ import com.ace.enums.OperateEnum;
 import com.ace.enums.TaskEnum;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -42,7 +43,7 @@ public class Task extends AbstractTimestampEntity {
     @OrderBy("gmtCreated ASC")
     private Set<Image> imageSet = new HashSet<Image>();
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "wfe_id")
     @JSONField(serialize = false)
     private Wfe wfe;
@@ -63,25 +64,33 @@ public class Task extends AbstractTimestampEntity {
     private String nextOperateV;
 
 
-    /*public void setNodeTypeV(String nodeTypeV) {
-        this.nodeTypeV = NodeEnum.valueOf(nodeType).getValue();
-    }*/
-
     public String getNodeTypeV() {
-        return NodeEnum.valueOf(nodeType).getValue();
+        if (Strings.isNullOrEmpty(nodeType)) {
+            return "";
+        } else {
+            return NodeEnum.valueOf(nodeType).getValue();
+        }
     }
 
     public String getStateV() {
-        return TaskEnum.valueOf(state).getValue();
+        if (Strings.isNullOrEmpty(state)) {
+            return "";
+        } else {
+            return TaskEnum.valueOf(state).getValue();
+        }
     }
 
     public String getNextOperateV() {
-        String[] split = nextOperate.split(";");
-        String[] v = new String[split.length];
-        for (int i = 0; i < split.length; i++) {
-            v[i] = OperateEnum.valueOf(split[i]).getValue();
+        if (Strings.isNullOrEmpty(nextOperate)) {
+            return "";
+        } else {
+            String[] split = nextOperate.split(";");
+            String[] v = new String[split.length];
+            for (int i = 0; i < split.length; i++) {
+                v[i] = OperateEnum.valueOf(split[i]).getValue();
+            }
+            return Joiner.on(";").join(v);
         }
-        return Joiner.on(";").join(v);
     }
 
     /*public void setStateV(String stateV) {

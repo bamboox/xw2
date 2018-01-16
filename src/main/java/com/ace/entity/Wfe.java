@@ -41,10 +41,6 @@ public class Wfe extends AbstractTimestampEntity {
     @Transient
     private String stateV;
 
-    /*public void setStateV(String stateV) {
-        this.stateV = WfeEnum.valueOf(state).getValue();
-    }*/
-
     public String getStateV() {
         return WfeEnum.valueOf(state).getValue();
     }
