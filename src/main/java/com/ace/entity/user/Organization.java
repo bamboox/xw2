@@ -22,6 +22,8 @@ import java.util.Set;
 @Table(name = "organization")
 public class Organization extends AbstractTimestampEntity {
     private String name;
+    private String address;
+    private String type;
     @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL)
     @JSONField(serialize = false)
     @JsonIgnore

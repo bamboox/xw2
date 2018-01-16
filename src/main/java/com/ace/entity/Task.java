@@ -6,6 +6,7 @@ import com.ace.enums.NodeEnum;
 import com.ace.enums.OperateEnum;
 import com.ace.enums.TaskEnum;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.google.common.base.Joiner;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -50,28 +51,51 @@ public class Task extends AbstractTimestampEntity {
     private String nodeType;
     @Transient
     private String nodeTypeV;
-
-    private String getNodeTypeV() {
-        return NodeEnum.valueOf(nodeType).getValue();
-    }
-
     //WAIT / COMPLETED
     private String state;
     @Transient
     private String stateV;
 
-    private String getStateV() {
-        return TaskEnum.valueOf(state).getValue();
-    }
 
     private int orderNo;
     private String nextOperate;
     @Transient
     private String nextOperateV;
 
-    private String getNextOperateV() {
-        return OperateEnum.valueOf(nextOperate).getValue();
+
+    /*public void setNodeTypeV(String nodeTypeV) {
+        this.nodeTypeV = NodeEnum.valueOf(nodeType).getValue();
+    }*/
+
+    public String getNodeTypeV() {
+        return NodeEnum.valueOf(nodeType).getValue();
     }
+
+    public String getStateV() {
+        return TaskEnum.valueOf(state).getValue();
+    }
+
+    public String getNextOperateV() {
+        String[] split = nextOperate.split(";");
+        String[] v = new String[split.length];
+        for (int i = 0; i < split.length; i++) {
+            v[i] = OperateEnum.valueOf(split[i]).getValue();
+        }
+        return Joiner.on(";").join(v);
+    }
+
+    /*public void setStateV(String stateV) {
+        this.stateV = TaskEnum.valueOf(state).getValue();
+    }*/
+
+    /*public void setNextOperateV(String nextOperateV) {
+        String[] split = nextOperate.split(";");
+        String[] v = new String[split.length];
+        for (int i = 0; i < split.length; i++) {
+            v[i] = OperateEnum.valueOf(split[i]).getValue();
+        }
+        this.nextOperateV = Joiner.on(";").join(v);
+    }*/
 
     public Task(String fromUserId, String fromUserName, String fromDepartmentId, String fromDepartmentName) {
         this.fromUserId = fromUserId;
