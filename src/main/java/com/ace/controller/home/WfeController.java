@@ -320,17 +320,43 @@ public class WfeController {
             String context = fromDepartment + "发来提醒!";
             msgService.sendMsgByAlias(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()), task.getFromUserId(), "activity", "wfe");
         } else if (OperateEnum.RECALL.name().equals(operate)) {
-
-
             /*task.setToUserId(userId);
             task.setToUserName(sysUser.getName());*/
-            task.setState(TaskEnum.RECALL.name());
+            /*task.setState(TaskEnum.RECALL.name());
             task.setMessage(message);
             taskRepository.save(task);
 
-
             wfe.setState(WfeEnum.RECALL.name());
+            wfeRepository.save(wfe);*/
+
+            wfeRepository.delete(wfeId);
+            //TODO 删除通知
+        } else if (OperateEnum.RECALL_AND_SELECT.name().equals(operate)) {
+            //
+            String selectDepartmentId = bizParams.getDepartmentId();
+            Department selectDepartment = departmentRepository.getOne(selectDepartmentId);
+
+            wfe.setToDepartmentId(selectDepartment.getId());
             wfeRepository.save(wfe);
+
+            String originalToDepartmentId=task.getToDepartmentId();
+
+            task.setToDepartmentId(selectDepartment.getId());
+            task.setToDepartmentName(selectDepartment.getName());
+
+            taskRepository.save(task);
+
+
+
+            String context = department.getName() + "部门发起反馈!";
+            msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId(), "activity", "wfe"),
+                    selectDepartment.getId());
+
+            //撤回通知
+//            context = department.getName() + "部门发起反馈!";
+//            msgService.sendMsgByTag(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId(), "activity", "wfe"),
+//                    originalToDepartmentId);
+
         } else {
             throw new DataFormatException("operate not exits");
         }

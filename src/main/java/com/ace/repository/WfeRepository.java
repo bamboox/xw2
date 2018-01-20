@@ -35,4 +35,8 @@ public interface WfeRepository extends ReadOnlyPagingAndSortingRepository<Wfe, S
 
     @CacheEvict(allEntries = true)
     <S extends Wfe> S save(S paramS);
+
+    @Override
+    @CacheEvict(allEntries = true)
+    void delete(String paramID);
 }

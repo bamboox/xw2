@@ -170,7 +170,7 @@ public class DiscoveryController {
 
         createTask.setNodeType(NodeEnum.START.name());
         createTask.setState(TaskEnum.START.name());
-        createTask.setNextOperate(OperateEnum.RECALL.name());
+
         createTask.setWfe(wfe);
         createTask.setOrderNo(0);
 
@@ -193,12 +193,17 @@ public class DiscoveryController {
             task.setToDepartmentName(departmentRepository.findOne(bizParams.getSendDepartmentId()).getName());
 
             wfe.setToDepartmentId(bizParams.getSendDepartmentId());
+
+            createTask.setNextOperate(OperateEnum.RECALL.name()+";"+OperateEnum.RECALL_AND_SELECT.name());
+
         } else {
             Department fastenDepartment = departmentRepository.findByOrganization_IdAndTypeCode(organizationId, "00000");
 
             task.setNextOperate(OperateEnum.SELECT.name());
             task.setToDepartmentId(fastenDepartment.getId());
             task.setToDepartmentName(fastenDepartment.getName());
+
+            createTask.setNextOperate(OperateEnum.RECALL.name());
 
             wfe.setToDepartmentId(fastenDepartment.getId());
         }
