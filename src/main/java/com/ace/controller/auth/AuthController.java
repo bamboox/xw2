@@ -25,6 +25,7 @@ public class AuthController {
     @Autowired
     private SysUserRepository userRepository;
 
+
     @ApiOperation("登录")
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
@@ -33,7 +34,17 @@ public class AuthController {
         SysUser user = apiAuthReqParam.getSysUser();
         SysUser sysUser = authService.login(user.getUsername(), user.getPassword());
         return ResponseEntity.ok(ApiBaseResponse.fromHttpStatus(HttpStatus.OK, sysUser));
+    }
 
+    @ApiOperation("登录")
+    @RequestMapping(value = "/sms", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> createSmsToken(@RequestBody ApiAuthReqParam apiAuthReqParam
+    ) throws AuthenticationException {
+
+        // Perform the security
+        SysUser sysUser = authService.login("18705596666");
+        return ResponseEntity.ok(ApiBaseResponse.fromHttpStatus(HttpStatus.OK, sysUser));
     }
 
     /*@RequestMapping(value = "/login", method = RequestMethod.GET)

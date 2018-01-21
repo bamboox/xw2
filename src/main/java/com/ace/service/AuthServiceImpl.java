@@ -1,5 +1,7 @@
 package com.ace.service;
 
+import com.ace.authentication.mobile.SmsCodeAuthenticationProvider;
+import com.ace.authentication.mobile.SmsCodeAuthenticationToken;
 import com.ace.entity.user.SysUser;
 import com.ace.repository.AuthService;
 import com.ace.repository.SysUserRepository;
@@ -26,7 +28,8 @@ public class AuthServiceImpl implements AuthService {
     private BCryptPasswordEncoder passwordEncoder;
     @Value("${jwt.tokenHead}")
     private String tokenHead;
-
+    @Autowired
+    private SmsCodeAuthenticationProvider smsCodeAuthenticationProvider;
     @Autowired
     public AuthServiceImpl(
             AuthenticationManager authenticationManager,
@@ -61,6 +64,17 @@ public class AuthServiceImpl implements AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         // Reload password post-security so we can generate token
         SysUser sysUser = (SysUser) userDetailsService.loadUserByUsername(username);
+        String token = jwtTokenUtil.generateToken(sysUser);
+        sysUser.setCurrentToken(token);
+        return sysUser;
+    }
+
+    @Override
+    public SysUser login(String mobilePhone) {
+        SmsCodeAuthenticationToken upToken = new SmsCodeAuthenticationToken("18705596666");
+        final Authentication authentication = smsCodeAuthenticationProvider.authenticate(upToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        SysUser sysUser = (SysUser) userDetailsService.loadUserByUsername("18705596666");
         String token = jwtTokenUtil.generateToken(sysUser);
         sysUser.setCurrentToken(token);
         return sysUser;

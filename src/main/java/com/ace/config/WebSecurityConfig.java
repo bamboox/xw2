@@ -1,5 +1,6 @@
 package com.ace.config;
 
+import com.ace.authentication.mobile.SmsCodeAuthenticationProvider;
 import com.ace.service.CustomUserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,8 +23,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
-    protected UserDetailsService customUserService() {
+    public UserDetailsService customUserService() {
         return new CustomUserService();
+    }
+    @Bean
+    public SmsCodeAuthenticationProvider smsCodeAuthenticationProvider(){
+        SmsCodeAuthenticationProvider smsCodeAuthenticationProvider=new SmsCodeAuthenticationProvider();
+        smsCodeAuthenticationProvider.setUserDetailsService(customUserService());
+        return smsCodeAuthenticationProvider;
     }
 
     /*@Autowired
