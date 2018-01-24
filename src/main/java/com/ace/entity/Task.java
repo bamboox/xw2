@@ -39,7 +39,7 @@ public class Task extends AbstractTimestampEntity {
     private String toUserName;
 
     private String message;
-    @ManyToMany(cascade = {CascadeType.ALL})
+    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     @OrderBy("gmtCreated ASC")
     private Set<Image> imageSet = new HashSet<Image>();
 
