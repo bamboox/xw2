@@ -188,7 +188,7 @@ public class DiscoveryController {
         String typeCode = department.getTypeCode();
         if ("00000".equals(typeCode)) {//
 
-            task.setNextOperate(OperateEnum.DOING.name());
+            task.setNextOperate(OperateEnum.DOING.name()+";"+OperateEnum.REFUSE.name());
             task.setToDepartmentId(bizParams.getSendDepartmentId());
             task.setToDepartmentName(departmentRepository.findOne(bizParams.getSendDepartmentId()).getName());
 

@@ -308,7 +308,12 @@ public class WfeController {
             createTask.setNodeType(NodeEnum.TASK_NODE.name());
             createTask.setState(TaskEnum.UN_STATE.name());
             createTask.setOrderNo(task.getOrderNo() + 1);
-            createTask.setNextOperate(OperateEnum.DOING.name());
+            if ("00000".equals(department.getTypeCode())) {
+                createTask.setNextOperate(OperateEnum.DOING.name());
+            }else{
+                createTask.setNextOperate(OperateEnum.SELECT.name());
+            }
+
             createTask.setWfe(wfe);
 
             taskRepository.save(createTask);
