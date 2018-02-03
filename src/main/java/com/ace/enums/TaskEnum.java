@@ -9,6 +9,7 @@ public enum TaskEnum {
     WAIT("等待审批"),
     PASS("审批通过"),
     REFUSE("审批拒绝"),
+    REFUSE_1("拒绝处理"),
     COMPLETED("结束"),
     SELECTED("移交"),
     DONE("已整改"),

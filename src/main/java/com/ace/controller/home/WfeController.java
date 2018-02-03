@@ -334,7 +334,7 @@ public class WfeController {
         }else if (OperateEnum.REFUSE_1.name().equals(operate)) {
             task.setToUserId(userId);
             task.setToUserName(sysUser.getName());
-            task.setState(TaskEnum.REFUSE.name());
+            task.setState(TaskEnum.REFUSE_1.name());
             task.setMessage(message);
             taskRepository.save(task);
 
