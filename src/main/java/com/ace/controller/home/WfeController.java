@@ -308,12 +308,7 @@ public class WfeController {
             createTask.setNodeType(NodeEnum.TASK_NODE.name());
             createTask.setState(TaskEnum.UN_STATE.name());
             createTask.setOrderNo(task.getOrderNo() + 1);
-            if ("00000".equals(department.getTypeCode())) {
-                createTask.setNextOperate(OperateEnum.DOING.name());
-            }else{
-                createTask.setNextOperate(OperateEnum.SELECT.name());
-            }
-
+            createTask.setNextOperate(OperateEnum.DOING.name());
             createTask.setWfe(wfe);
 
             taskRepository.save(createTask);
@@ -336,6 +331,33 @@ public class WfeController {
 
             wfeRepository.delete(wfeId);
             //TODO 删除通知
+        }else if (OperateEnum.REFUSE_1.name().equals(operate)) {
+            task.setToUserId(userId);
+            task.setToUserName(sysUser.getName());
+            task.setState(TaskEnum.REFUSE.name());
+            task.setMessage(message);
+            taskRepository.save(task);
+
+            Task createTask = new Task();
+            createTask.setFromDepartmentId(department.getId());
+            createTask.setFromDepartmentName(department.getName());
+            createTask.setFromUserId(userId);
+            createTask.setFromUserName(sysUser.getName());
+
+            createTask.setToDepartmentId(task.getFromDepartmentId());
+            createTask.setToDepartmentName(task.getFromDepartmentName());
+
+            createTask.setNodeType(NodeEnum.TASK_NODE.name());
+            createTask.setState(TaskEnum.UN_STATE.name());
+            createTask.setOrderNo(task.getOrderNo() + 1);
+            createTask.setNextOperate(OperateEnum.SELECT.name());
+            createTask.setWfe(wfe);
+
+            taskRepository.save(createTask);
+
+            String context = fromDepartment + "发起反馈!";
+            msgService.sendMsgByAlias(context, "您有新任务来了!", ImmutableMap.of("id", wfe.getId()), task.getFromUserId(), "activity", "wfe");
+
         } else if (OperateEnum.RECALL_AND_SELECT.name().equals(operate)) {
             //
             String selectDepartmentId = bizParams.getDepartmentId();

@@ -10,7 +10,8 @@ public enum OperateEnum {
     DOING("处理"),
     REMINDER("催办"),
     SELECT("移交"),
-    RECALL_AND_SELECT("撤回移交");
+    RECALL_AND_SELECT("撤回移交"),
+    REFUSE_1("拒绝");
     private String value;
 
     public String getValue() {
